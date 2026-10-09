@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>streaminghot — pick before it goes cold</title>
+<style>
+:root{
+  --sans:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Roboto,sans-serif;
+  --mono:'SF Mono',ui-monospace,Menlo,Consolas,monospace;
+  --serif:Georgia,'Times New Roman',serif;
+  --r-card:16px; --r-pill:100px;
+}
+html[data-theme="dark"]{
+  --bg:#0C0E0D; --surface:#141918; --surface-2:#1A201E; --line:#1F2422; --line-2:#2A332F;
+  --ink:#F2EFE6; --ink-2:#8A948F; --ink-3:#4F5A55;
+  --accent:#2E9E78; --accent-ink:#06140F; --accent-dim:#5F8A78; --accent-deep:#1B5E4A;
+  --neutral-a:#2A3330; --neutral-b:#0C100E;
+}
+html[data-theme="light"]{
+  --bg:#F0F0F8; --surface:#FFFFFF; --surface-2:#F7F7FC; --line:#DCDCE8; --line-2:#C8C9D4;
+  --ink:#141619; --ink-2:#6A6B78; --ink-3:#B3B4BD;
+  --accent:#0A21C0; --accent-ink:#FFFFFF; --accent-dim:#5457A0; --accent-deep:#050A44;
+  --neutral-a:#2C2E3A; --neutral-b:#141619;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);min-height:100vh;
+  padding:20px 18px 44px;transition:background .35s ease,color .35s ease}
+.wrap{max-width:620px;margin:0 auto}
+
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:34px}
+.brand{display:flex;align-items:center;gap:9px}
+.brand h1{font-size:19px;font-weight:600;letter-spacing:-.045em;line-height:1}
+.brand h1 i{font-style:normal;color:var(--accent)}
+.tools{display:flex;align-items:center;gap:8px}
+.chip{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ink-2);
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-pill);
+  padding:7px 11px;cursor:pointer;transition:border-color .2s,color .2s}
+.chip:hover{border-color:var(--line-2);color:var(--ink)}
+.chip.on{border-color:var(--accent);color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.lede{margin-bottom:28px}
+.lede p{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--ink-2);margin-bottom:9px}
+.lede h2{font-size:clamp(30px,8.5vw,40px);line-height:.98;letter-spacing:-.04em;font-weight:600}
+.lede h2 em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--accent)}
+
+.sect{margin-bottom:26px}
+.sect-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
+.sect-top span:first-child{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--ink-2)}
+.sect-top span:last-child{font-family:var(--mono);font-size:11px;color:var(--accent)}
+
+.moods{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media (max-width:460px){.moods{grid-template-columns:repeat(2,1fr)}}
+.mood{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);
+  overflow:hidden;cursor:pointer;text-align:left;font-family:inherit;color:inherit;
+  transition:border-color .2s,transform .12s}
+.mood:hover{border-color:var(--line-2)}
+.mood:active{transform:scale(.985)}
+.mood[aria-pressed="true"]{border-color:var(--accent)}
+.mood .art{height:78px;position:relative;display:block}
+.mood .art svg{position:absolute;inset:0;width:100%;height:100%}
+.mood .art b{position:absolute;left:9px;bottom:8px;font-size:14px;font-weight:600;letter-spacing:-.02em;color:#fff}
+.mood .foot{padding:7px 9px;display:flex;justify-content:space-between;align-items:center;gap:6px}
+.mood .foot em{font-family:var(--mono);font-style:normal;font-size:11px;color:var(--ink-3)}
+.mood[aria-pressed="true"] .foot em{color:var(--accent-dim)}
+.tick{width:13px;height:13px;border-radius:50%;background:var(--accent);display:none;
+  flex:0 0 auto;align-items:center;justify-content:center}
+.mood[aria-pressed="true"] .tick{display:flex}
+
+.wave{display:flex;gap:3px;align-items:flex-end;height:34px;margin-bottom:8px}
+.wave button{flex:1;background:var(--line-2);border:0;border-radius:2px;padding:0;cursor:pointer;transition:background .18s}
+.wave button.on{background:var(--accent)}
+.scale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--ink-2)}
+.scale span{display:inline-flex;align-items:center;gap:6px}
+.scale svg{flex:0 0 auto;opacity:.85}
+
+.att{display:flex;gap:8px}
+.att button{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);
+  padding:11px 13px;text-align:left;font-family:inherit;color:inherit;cursor:pointer;transition:border-color .2s}
+.att button[aria-pressed="true"]{border-color:var(--accent)}
+.att strong{display:block;font-size:13px;font-weight:600;letter-spacing:-.015em;margin-bottom:2px}
+.att em{font-family:var(--mono);font-style:normal;font-size:11px;color:var(--ink-3)}
+.att button[aria-pressed="true"] em{color:var(--accent-dim)}
+
+.origins{display:flex;flex-wrap:wrap;gap:6px}
+.origins button{font-family:var(--mono);font-size:11px;letter-spacing:.06em;
+  background:var(--surface);border:1px solid var(--line);border-radius:10px;
+  padding:7px 11px;color:var(--ink-3);cursor:pointer;transition:border-color .2s,color .2s}
+.origins button:hover{border-color:var(--line-2);color:var(--ink-2)}
+.origins button[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+
+.go{width:100%;background:var(--accent);color:var(--accent-ink);border:0;border-radius:var(--r-pill);
+  padding:16px 22px;font-family:inherit;font-size:15px;font-weight:600;letter-spacing:-.01em;
+  cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:opacity .2s}
+.go:hover{opacity:.92}
+.go:disabled{opacity:.4;cursor:not-allowed}
+
+.hidden{display:none !important}
+.res-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:20px}
+.res-head h2{font-size:clamp(24px,6.5vw,30px);line-height:1.02;letter-spacing:-.04em;font-weight:600}
+.res-head p{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--ink-2);margin-top:8px}
+
+.cards{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);
+  overflow:hidden;display:flex;text-align:left;width:100%;font-family:inherit;color:inherit;
+  cursor:pointer;transition:border-color .2s}
+.card:hover{border-color:var(--line-2)}
+.card .poster{width:84px;flex:0 0 auto;position:relative;min-height:116px;overflow:hidden;
+  background-size:cover;background-position:center}
+.card .poster svg{position:absolute;inset:0;width:100%;height:100%}
+.card .body{padding:12px 14px;flex:1;min-width:0}
+.slot{font-family:var(--mono);font-size:11px;letter-spacing:.12em;margin-bottom:5px}
+.slot.safe{color:var(--accent)}
+.slot.quick,.slot.wild{color:var(--ink-2)}
+.card h3{font-size:15px;font-weight:600;letter-spacing:-.015em;margin-bottom:3px}
+.meta{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-bottom:8px}
+.why{font-family:var(--serif);font-size:13px;line-height:1.45;color:var(--ink-2);font-style:italic}
+.where{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.pv{font-family:var(--mono);font-size:11px;padding:3px 8px;border-radius:6px;
+  background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2)}
+.pv.sub{border-color:var(--accent);color:var(--accent-dim)}
+
+.maths{margin-top:10px;padding-top:9px;border-top:1px dashed var(--line-2);
+  font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--ink-3)}
+.maths b{color:var(--accent);font-weight:400}
+
+.actions{display:flex;gap:9px}
+.alt{flex:1;background:transparent;border:1px solid var(--line-2);border-radius:var(--r-pill);
+  padding:13px;font-family:inherit;font-size:13px;font-weight:500;color:var(--ink);cursor:pointer;
+  transition:border-color .2s,opacity .2s}
+.alt:hover{border-color:var(--accent)}
+.alt:disabled{opacity:.35;cursor:not-allowed}
+
+.nudge{margin-top:14px;background:var(--surface);border:1px solid var(--accent);
+  border-radius:var(--r-card);padding:15px 16px}
+.nudge h4{font-size:14px;font-weight:600;letter-spacing:-.015em;margin-bottom:5px}
+.nudge p{font-family:var(--mono);font-size:11px;line-height:1.6;color:var(--accent-dim);margin-bottom:12px}
+.nudge button{width:100%;background:var(--accent);color:var(--accent-ink);border:0;
+  border-radius:var(--r-pill);padding:12px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer}
+
+.loading,.err{font-family:var(--mono);font-size:11px;line-height:1.8;color:var(--ink-2);
+  padding:24px 16px;text-align:center;border:1px dashed var(--line-2);border-radius:var(--r-card)}
+.foot-note{margin-top:26px;padding-top:16px;border-top:1px solid var(--line);
+  font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--ink-3)}
+.foot-note a{color:var(--accent-dim)}
+
+/* ── desktop ─────────────────────────────────────────────── */
+@media (min-width:900px){
+  body{padding:36px 40px 72px}
+  .wrap{max-width:1140px}
+  .top{margin-bottom:56px}
+  .brand h1{font-size:22px}
+
+  #setup{display:grid;grid-template-columns:minmax(300px,1fr) minmax(420px,1.15fr);
+    gap:0 64px;align-items:start}
+  .lede{grid-column:1;grid-row:1;position:sticky;top:36px;margin:0;padding-right:20px}
+  .lede p{font-size:11px;margin-bottom:14px}
+  .lede h2{font-size:clamp(44px,4.4vw,62px);line-height:.94}
+  .panel{grid-column:2;grid-row:1}
+  .panel .sect:last-of-type{margin-bottom:30px}
+  .mood .art{height:104px}
+  .mood .art b{font-size:15px}
+  .wave{height:44px}
+
+  #results{display:block}
+  .res-head{margin-bottom:28px}
+  .res-head h2{font-size:clamp(32px,3.4vw,44px)}
+  .cards{flex-direction:row;align-items:stretch;gap:14px;margin-bottom:22px}
+  .card{flex-direction:column;flex:1 1 0;min-width:0}
+  .card .poster{width:100%;min-height:0;height:230px}
+  .card .body{padding:15px 16px 17px;display:flex;flex-direction:column}
+  .card h3{font-size:17px}
+  .why{margin-bottom:auto}
+  .where{margin-top:12px}
+  .actions{max-width:320px}
+  .nudge{max-width:420px}
+  .foot-note{margin-top:44px}
+}
+
+/* ── very wide ───────────────────────────────────────────── */
+@media (min-width:1400px){
+  .wrap{max-width:1260px}
+  .lede h2{font-size:66px}
+  .card .poster{height:260px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <svg width="15" height="19" viewBox="0 0 16 20" fill="none" aria-hidden="true">
+        <path d="M8 2.5 Q11 6.3 9.5 10 Q8 12 8 14.8" stroke="var(--accent)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        <path d="M4.6 4.4 Q6.6 7.7 5.6 11" stroke="var(--accent-deep)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+        <path d="M11.4 4.4 Q13.4 7.7 12.4 11" stroke="var(--accent-deep)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+        <ellipse cx="8" cy="17" rx="6" ry="1.6" fill="var(--accent)" opacity=".3"/>
+      </svg>
+      <h1>streaming<i>hot</i></h1>
+    </div>
+    <div class="tools">
+      <button class="chip" id="debug" aria-pressed="false">MATHS</button>
+      <button class="chip" id="theme">DARK</button>
+    </div>
+  </header>
+
+  <section id="setup">
+    <div class="lede">
+      <p id="kicker">TONIGHT</p>
+      <h2>What are we<br>eating <em>to?</em></h2>
+    </div>
+
+    <div class="panel">
+    <div class="sect">
+      <div class="sect-top"><span>THE MOOD</span><span id="mood-hint">pick one</span></div>
+      <div class="moods" id="moods"></div>
+    </div>
+
+    <div class="sect">
+      <div class="sect-top"><span>THE MEAL</span><span id="mins">24 MIN</span></div>
+      <div class="wave" id="wave" role="group" aria-label="How long is your meal"></div>
+      <div class="scale">
+        <span>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M2.2 8.4h9.6a4.8 4.8 0 0 1-9.6 0Z" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
+            <path d="M4.6 5.6V3.1M7 5.3V2.4M9.4 5.6V3.1" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+          </svg>SNACK
+        </span>
+        <span>FEAST
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+            <path d="M1.6 11.4h11.8" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+            <path d="M2.6 11.4a4.9 4.9 0 0 1 9.8 0" stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"/>
+            <path d="M7.5 3.2v1.3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/>
+            <circle cx="7.5" cy="2.4" r=".9" fill="currentColor"/>
+          </svg>
+        </span>
+      </div>
+    </div>
+
+    <div class="sect">
+      <div class="sect-top"><span>YOUR EYES</span><span></span></div>
+      <div class="att" id="att">
+        <button data-att="half" aria-pressed="true"><strong>On the plate</strong><em>nothing subtitled</em></button>
+        <button data-att="full" aria-pressed="false"><strong>On the screen</strong><em>anything goes</em></button>
+      </div>
+    </div>
+
+    <div class="sect">
+      <div class="sect-top"><span>WHERE IT'S FROM</span><span id="origin-note">anywhere</span></div>
+      <div class="origins" id="origins"></div>
+    </div>
+
+    <button class="go" id="go" disabled>
+      <span>Serve me something</span>
+      <svg width="17" height="17" viewBox="0 0 17 17" fill="none" aria-hidden="true">
+        <path d="M3 8.5h11M9.5 4l4.5 4.5L9.5 13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    </div>
+  </section>
+
+  <section id="results" class="hidden">
+    <div class="res-head">
+      <div><h2>Three ways<br>to go</h2><p id="res-sub"></p></div>
+      <button class="chip" id="back">BACK</button>
+    </div>
+    <div class="cards" id="cards"></div>
+    <div class="actions"><button class="alt" id="shuffle">Show me three others</button></div>
+    <div class="nudge hidden" id="nudge">
+      <h4>Still scrolling?</h4>
+      <p>THAT'S THREE ROUNDS. SIGN IN AND<br>I'LL JUST PICK ONE FOR YOU.</p>
+      <button id="signin">Let it decide</button>
+    </div>
+  </section>
+
+  <p class="foot-note">
+    Show data from <a href="https://www.tvmaze.com">TVmaze</a>, CC BY-SA 4.0.<br>
+    Origin is where a show was made, not where you can stream it —<br>
+    TVmaze has no availability data. Rerun <b>buildCatalogue()</b> in the<br>
+    console for the full index, then swap in the new catalogue.js.
+  </p>
+</div>
+
+<script src="catalogue.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   1. CONFIG
+   ═══════════════════════════════════════════════════════════════════ */
+const CONFIG = {
+  // "sample"    → built-in array, works offline
+  // "catalogue" → loads ./catalogue.json (make it with buildCatalogue())
+  // "live"      → queries TVmaze directly, slow, for testing only
+  SOURCE: "catalogue",
+
+  TVMAZE: "https://api.tvmaze.com",
+  CATALOGUE_URL: "./catalogue.json",   // only used if catalogue.js is absent
+
+  // Quality floor applied when building the catalogue.
+  FLOOR: { rating: 7.4, popularity: 88 },
+
+  // TVmaze pages the index by ASCENDING ID, so a low page count gives you
+  // only the oldest shows. Leave at 0 to walk everything (~3 minutes).
+  BUILD_PAGES: 0        // 0 = walk the whole index (recommended)
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   2. MOOD RECIPES — the computation you asked for
+   ═══════════════════════════════════════════════════════════════════
+   TVmaze has no "cozy" filter, so each mood is a weighted recipe that
+   runs over every candidate and produces a score.
+
+   TVmaze genres (the full vocabulary):
+     Action Adventure Anime Children Comedy Crime DIY Drama Espionage
+     Family Fantasy Food History Horror Legal Medical Music Mystery
+     Nature Romance Science-Fiction Sports Supernatural Thriller Travel
+     War Western
+
+   TVmaze types (separate from genres):
+     Scripted  Documentary  Reality  Animation  Talk Show  Game Show
+
+   gate     → a title must carry at least one of these, or it's out
+   boost    → points added per matching genre
+   veto     → instant disqualification
+   types    → points added for matching show type
+   target   → ideal runtime in minutes; distance from it costs points
+   ═══════════════════════════════════════════════════════════════════ */
+
+const MOOD_RECIPES = {
+  cozy: {
+    label:"Cozy", note:"warm and slow", art:"warm",
+    gradient:["var(--accent-deep)","#081412"],
+    gate:  ["Food","Travel","Family","Romance","Nature","DIY","History"],
+    boost: { Food:10, Travel:8, Romance:5, Family:5, Nature:5, DIY:5, History:3, Drama:3, Comedy:2 },
+    veto:  ["Horror","War","Espionage","Legal","Medical","Western","Crime","Thriller","Action","Children","Anime","Science-Fiction"],
+    types: { Documentary:5, Scripted:2 },
+    penalty:{ Fantasy:2 },
+    target: 35, minRating: 7.3
+  },
+  tense: {
+    label:"Tense", note:"on edge", art:"screen",
+    gradient:["var(--neutral-a)","var(--neutral-b)"],
+    gate:  ["Thriller","Crime","Mystery","Espionage","Horror","Supernatural"],
+    boost: { Thriller:9, Mystery:7, Crime:6, Espionage:6, Drama:3, Supernatural:3, Horror:2, "Science-Fiction":2 },
+    veto:  ["Children","Family","DIY","Food","Anime","Romance"],
+    types: { Scripted:4, Animation:-6 },
+    penalty:{ Comedy:5, Adventure:4 },
+    target: 48, minRating: 7.6
+  },
+  light: {
+    label:"Light", note:"easy laughs", art:"face",
+    gradient:["#9EA8A2","var(--neutral-a)"],
+    gate:  ["Comedy"],
+    boost: { Comedy:9, Family:2, Music:2, Sports:1 },
+    veto:  ["Horror","Thriller","War","Crime","Medical","Legal","Espionage","Children","Anime"],
+    types: { Scripted:3, "Panel Show":3, "Game Show":2, Animation:0 },
+    penalty:{ Drama:4, Action:3 },
+    target: 24, minRating: 7.3
+  },
+  curious: {
+    label:"Curious", note:"learn a bit", art:"orbit",
+    gradient:["var(--accent)","var(--accent-deep)"],
+    gate:  ["Nature","History","Food","Travel","Sports","Music","Medical"],
+    boost: { Nature:9, History:8, Food:7, Travel:6, Music:3, Sports:3, Medical:2 },
+    veto:  ["Horror","Romance","Supernatural","Fantasy","Children","Anime"],
+    types: { Documentary:12, Scripted:0, Animation:-8 },
+    target: 45, minRating: 7.4
+  }
+  // ── ADD A FIFTH MOOD HERE. Add its art key to ART below too. ──
+};
+
+/* How much each signal is worth. Tune these to change the whole feel. */
+const WEIGHTS = {
+  rating:      10,   // × TVmaze 0–10 rating  → up to 100
+  genre:        1,   // × summed boost points
+  type:         1,   // × type points
+  popularity:  0.12, // × TVmaze 0–100 weight → up to 12
+  runtimeMiss: 0.9,  // × minutes away from the mood's target
+  overrun:     2.2,  // × minutes longer than the meal — hurts most
+  subtitled:  28     // flat cost when eyes are on the plate
+};
+
+/* ═══════════════════════════════════════════════════════════════════
+   3. THE SCORING COMPUTATION
+   ═══════════════════════════════════════════════════════════════════ */
+
+function scoreTitle(show, { mood, maxMins, attention, origin }) {
+  const R = MOOD_RECIPES[mood];
+  const g = show.genres || [];
+  const why = [];
+
+  // ── hard gates ──
+  if (origin && origin !== "any" && show.country !== origin) return null;
+  if (R.veto.some(v => g.includes(v)))        return null;
+  if (!g.some(x => R.gate.includes(x)) && !((R.types[show.type]||0) >= 10)) return null;
+  if ((show.rating || 0) < R.minRating)       return null;
+  if (!show.minutes)                          return null;
+
+  // ── base: how good is it ──
+  let score = show.rating * WEIGHTS.rating;
+  why.push(`rating ${show.rating} → +${Math.round(score)}`);
+
+  // ── genre fit ──
+  let gp = 0;
+  g.forEach(x => { if (R.boost[x]) gp += R.boost[x]; });
+  if (R.penalty) g.forEach(x => { if (R.penalty[x]) gp -= R.penalty[x]; });
+  if (gp) { score += gp * WEIGHTS.genre; why.push(`genres → ${gp > 0 ? "+" : ""}${gp}`); }
+
+  // ── show type ──
+  const tp = R.types[show.type] || 0;
+  if (tp) { score += tp * WEIGHTS.type; why.push(`${show.type} → +${tp}`); }
+
+  // ── popularity, as a stand-in for vote count ──
+  const pp = (show.popularity || 0) * WEIGHTS.popularity;
+  if (pp) { score += pp; why.push(`known → +${Math.round(pp)}`); }
+
+  // ── runtime: distance from the mood's natural length ──
+  const miss = Math.abs(show.minutes - R.target) * WEIGHTS.runtimeMiss;
+  score -= miss;
+  why.push(`${show.minutes}m vs ${R.target}m → −${Math.round(miss)}`);
+
+  // ── runtime: longer than the meal is the real sin ──
+  if (show.minutes > maxMins) {
+    const over = (show.minutes - maxMins) * WEIGHTS.overrun;
+    score -= over;
+    why.push(`${show.minutes - maxMins}m past your meal → −${Math.round(over)}`);
+  }
+
+  // ── attention ──
+  if (attention === "half" && show.subtitled) {
+    score -= WEIGHTS.subtitled;
+    why.push(`subtitled → −${WEIGHTS.subtitled}`);
+  }
+
+  return { ...show, score: Math.round(score), why };
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   4. DATA LAYER
+   ═══════════════════════════════════════════════════════════════════ */
+
+let CATALOGUE = null;
+
+function normalise(s){
+  return {
+    id: s.id,
+    title: s.name,
+    genres: s.genres || [],
+    type: s.type,
+    minutes: s.averageRuntime || s.runtime || null,
+    rating: s.rating?.average || 0,
+    popularity: s.weight || 0,
+    subtitled: s.language !== "English",
+    poster: s.image?.medium || null,
+    network: s.network?.name || s.webChannel?.name || null,
+    country: s.network?.country?.code || null
+  };
+}
+
+async function loadPool(){
+  if (CONFIG.SOURCE === "sample") return SAMPLE;
+
+  if (CONFIG.SOURCE === "catalogue"){
+    if (!CATALOGUE){
+      // catalogue.js sets window.CATALOGUE and works from file:// with no server
+      if (window.CATALOGUE) CATALOGUE = window.CATALOGUE;
+      else {
+        const r = await fetch(CONFIG.CATALOGUE_URL);
+        if (!r.ok) throw new Error("No catalogue. Run buildCatalogue() in the console.");
+        CATALOGUE = await r.json();
+      }
+    }
+    return CATALOGUE;
+  }
+
+  if (CONFIG.SOURCE === "live"){
+    if (!CATALOGUE){
+      const pages = await Promise.all([0,1,2,3].map(p =>
+        fetch(`${CONFIG.TVMAZE}/shows?page=${p}`).then(r => r.json())));
+      CATALOGUE = pages.flat().map(normalise)
+        .filter(s => s.rating >= CONFIG.FLOOR.rating && s.minutes);
+    }
+    return CATALOGUE;
+  }
+}
+
+async function getCandidates(ctx){
+  const pool = await loadPool();
+  return pool
+    .map(s => scoreTitle(s, ctx))
+    .filter(Boolean)
+    .sort((a,b) => b.score - a.score);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   5. CATALOGUE BUILDER — run buildCatalogue() in the browser console
+   ═══════════════════════════════════════════════════════════════════
+   Walks the TVmaze index, applies the quality floor, and downloads a
+   catalogue.json you can ship next to this file. No API key needed.
+   TVmaze allows ~20 calls per 10s, so this paces itself.
+   ═══════════════════════════════════════════════════════════════════ */
+
+async function buildCatalogue(pages = CONFIG.BUILD_PAGES){
+  const out = [];
+  const limit = pages > 0 ? pages : Infinity;
+  for (let p = 0; p < limit; p++){
+    try {
+      const r = await fetch(`${CONFIG.TVMAZE}/shows?page=${p}`);
+      if (r.status === 404) break;                       // end of index
+      if (r.status === 429){ await new Promise(s=>setTimeout(s,3000)); p--; continue; }
+      const batch = (await r.json()).map(normalise).filter(s =>
+        s.minutes && s.minutes >= 8 && s.minutes <= 90 &&
+        s.rating >= CONFIG.FLOOR.rating &&
+        s.popularity >= CONFIG.FLOOR.popularity &&
+        s.genres.length && s.poster
+      );
+      out.push(...batch);
+      if (p % 10 === 0) console.log(`page ${p} — kept ${out.length} so far`);
+      await new Promise(s => setTimeout(s, 520));        // stay under the rate limit
+    } catch(e){ console.warn(`page ${p} failed`, e); }
+  }
+  const js = "window.CATALOGUE=" + JSON.stringify(out) + ";";
+  const a = Object.assign(document.createElement("a"), {
+    href: URL.createObjectURL(new Blob([js], {type:"text/javascript"})),
+    download: "catalogue.js"
+  });
+  a.click();
+  console.log(`Done. ${out.length} titles saved to catalogue.js — replace the old one.`);
+  return out;
+}
+window.buildCatalogue = buildCatalogue;
+
+/* ═══════════════════════════════════════════════════════════════════
+   6. SAMPLE DATA — hand-written, replaced by the catalogue
+   ═══════════════════════════════════════════════════════════════════ */
+const SAMPLE = [
+  {id:1,title:"The Bear",genres:["Comedy","Drama","Food"],type:"Scripted",minutes:22,rating:8.6,popularity:98,subtitled:false,poster:null,network:"FX"},
+  {id:2,title:"Midnight Diner",genres:["Drama","Food"],type:"Scripted",minutes:25,rating:8.4,popularity:91,subtitled:true,poster:null,network:"Netflix"},
+  {id:3,title:"Chef's Table",genres:["Food"],type:"Documentary",minutes:50,rating:8.5,popularity:93,subtitled:false,poster:null,network:"Netflix"},
+  {id:4,title:"Somebody Feed Phil",genres:["Food","Travel"],type:"Documentary",minutes:50,rating:8.0,popularity:92,subtitled:false,poster:null,network:"Netflix"},
+  {id:5,title:"Detectorists",genres:["Comedy","Drama"],type:"Scripted",minutes:30,rating:8.5,popularity:90,subtitled:false,poster:null,network:"BBC Four"},
+  {id:6,title:"Our Flag Means Death",genres:["Comedy","Adventure"],type:"Scripted",minutes:30,rating:8.0,popularity:94,subtitled:false,poster:null,network:"Max"},
+  {id:7,title:"Great British Bake Off",genres:["Food","Family"],type:"Reality",minutes:60,rating:7.9,popularity:95,subtitled:false,poster:null,network:"Channel 4"},
+
+  {id:8,title:"Severance",genres:["Drama","Thriller","Science-Fiction"],type:"Scripted",minutes:50,rating:8.7,popularity:99,subtitled:false,poster:null,network:"Apple TV+"},
+  {id:9,title:"Slow Horses",genres:["Drama","Espionage","Thriller"],type:"Scripted",minutes:48,rating:8.3,popularity:95,subtitled:false,poster:null,network:"Apple TV+"},
+  {id:10,title:"Dark",genres:["Drama","Mystery","Science-Fiction"],type:"Scripted",minutes:55,rating:8.7,popularity:97,subtitled:true,poster:null,network:"Netflix"},
+  {id:11,title:"Black Mirror",genres:["Drama","Science-Fiction","Thriller"],type:"Scripted",minutes:60,rating:8.7,popularity:98,subtitled:false,poster:null,network:"Netflix"},
+  {id:12,title:"Bodyguard",genres:["Crime","Drama","Thriller"],type:"Scripted",minutes:58,rating:8.1,popularity:93,subtitled:false,poster:null,network:"BBC One"},
+  {id:13,title:"Inside No. 9",genres:["Comedy","Drama","Mystery"],type:"Scripted",minutes:29,rating:8.6,popularity:91,subtitled:false,poster:null,network:"BBC Two"},
+
+  {id:14,title:"Taskmaster",genres:["Comedy"],type:"Game Show",minutes:45,rating:8.4,popularity:94,subtitled:false,poster:null,network:"Channel 4"},
+  {id:15,title:"Schitt's Creek",genres:["Comedy","Family"],type:"Scripted",minutes:22,rating:8.5,popularity:96,subtitled:false,poster:null,network:"CBC"},
+  {id:16,title:"Brooklyn Nine-Nine",genres:["Comedy","Crime"],type:"Scripted",minutes:22,rating:8.4,popularity:97,subtitled:false,poster:null,network:"NBC"},
+  {id:17,title:"Ghosts",genres:["Comedy","Supernatural"],type:"Scripted",minutes:28,rating:8.2,popularity:92,subtitled:false,poster:null,network:"BBC One"},
+  {id:18,title:"What We Do in the Shadows",genres:["Comedy","Horror"],type:"Scripted",minutes:24,rating:8.6,popularity:95,subtitled:false,poster:null,network:"FX"},
+  {id:19,title:"Cunk on Earth",genres:["Comedy","History"],type:"Scripted",minutes:28,rating:8.1,popularity:90,subtitled:false,poster:null,network:"BBC Two"},
+
+  {id:20,title:"How To with John Wilson",genres:["Comedy","Travel"],type:"Documentary",minutes:25,rating:8.2,popularity:90,subtitled:false,poster:null,network:"Max"},
+  {id:21,title:"Abstract: The Art of Design",genres:["Music","History"],type:"Documentary",minutes:45,rating:8.2,popularity:89,subtitled:false,poster:null,network:"Netflix"},
+  {id:22,title:"Planet Earth III",genres:["Nature"],type:"Documentary",minutes:58,rating:9.0,popularity:96,subtitled:false,poster:null,network:"BBC One"},
+  {id:23,title:"The Last Dance",genres:["Sports","History"],type:"Documentary",minutes:50,rating:8.9,popularity:94,subtitled:false,poster:null,network:"ESPN"},
+  {id:24,title:"Street Food: Asia",genres:["Food","Travel"],type:"Documentary",minutes:30,rating:8.0,popularity:88,subtitled:true,poster:null,network:"Netflix"},
+  {id:25,title:"Our Planet",genres:["Nature"],type:"Documentary",minutes:50,rating:8.8,popularity:95,subtitled:false,poster:null,network:"Netflix"}
+];
+
+/* ═══════════════════════════════════════════════════════════════════
+   7. PRESENTATION
+   ═══════════════════════════════════════════════════════════════════ */
+const ART = {
+  warm:`<circle cx="50" cy="30" r="20" fill="#fff" opacity=".1"/><circle cx="50" cy="30" r="12" fill="#fff" opacity=".13"/>
+        <path d="M8 60 Q26 46 50 56 Q74 66 92 52" stroke="#fff" stroke-width="1.2" fill="none" opacity=".35"/>
+        <path d="M8 69 Q26 57 50 65 Q74 73 92 61" stroke="#fff" stroke-width="1" fill="none" opacity=".2"/>`,
+  screen:`<rect x="20" y="14" width="60" height="34" rx="2" fill="#fff" opacity=".12"/>
+          <rect x="30" y="22" width="40" height="18" rx="1" fill="#fff" opacity=".16"/>
+          <line x1="10" y1="58" x2="90" y2="58" stroke="#fff" stroke-width=".8" opacity=".25"/>
+          <line x1="10" y1="65" x2="62" y2="65" stroke="#fff" stroke-width=".8" opacity=".15"/>`,
+  face:`<circle cx="34" cy="26" r="7" fill="#fff" opacity=".4"/><circle cx="66" cy="26" r="7" fill="#fff" opacity=".4"/>
+        <path d="M26 46 Q50 62 74 46" stroke="#fff" stroke-width="2.4" fill="none" opacity=".45" stroke-linecap="round"/>`,
+  orbit:`<circle cx="50" cy="34" r="22" fill="none" stroke="#fff" stroke-width="1" opacity=".3"/>
+         <circle cx="50" cy="34" r="13" fill="#fff" opacity=".14"/>
+         <circle cx="50" cy="12" r="3.4" fill="#fff" opacity=".6"/>
+         <circle cx="72" cy="34" r="2.4" fill="#fff" opacity=".4"/>`
+};
+
+const REASONS = {
+  safe:["The one that just works for this.","Reliable, and it earns it.","If you only pick one, this."],
+  quick:["Short enough to finish with the plate.","In and out before the food cools.","Done by the time you are."],
+  wild:["Not the obvious call. Worth it.","Sideways from the rest. Try it.","The one you wouldn't have found."]
+};
+
+/* TVmaze gives the show's HOME country, not where you can stream it.
+   This filters by origin — "British telly", "nothing Japanese" — which is a
+   real preference, but it is NOT availability. For true per-country streaming
+   you need a provider API such as Watchmode layered on top. */
+const ORIGINS = [
+  {code:"any", label:"ANYWHERE"},
+  {code:"US",  label:"US"},
+  {code:"GB",  label:"UK"},
+  {code:"CA",  label:"CANADA"},
+  {code:"AU",  label:"AUSTRALIA"},
+  {code:"JP",  label:"JAPAN"}
+];
+
+const S = { mood:null, mins:24, attention:"half", origin:"any", shuffles:0, seen:new Set(), debug:false };
+const $ = s => document.querySelector(s);
+const BANDS = [10,16,22,28,36,45,58,75];
+
+$("#theme").addEventListener("click", () => {
+  const n = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = n;
+  $("#theme").textContent = n.toUpperCase();
+});
+
+$("#debug").addEventListener("click", () => {
+  S.debug = !S.debug;
+  $("#debug").classList.toggle("on", S.debug);
+  $("#debug").setAttribute("aria-pressed", String(S.debug));
+  if (lastPicks.length) paint(lastPicks);
+});
+
+(function(){
+  const h = new Date().getHours();
+  let k = "TONIGHT", b = 28;
+  if (h < 11)       { k = "THIS MORNING";   b = 16; }
+  else if (h < 15)  { k = "LUNCH";          b = 22; }
+  else if (h < 18)  { k = "THIS AFTERNOON"; b = 22; }
+  else if (h >= 22) { k = "LATE";           b = 22; }
+  $("#kicker").textContent = k; S.mins = b;
+})();
+
+$("#moods").innerHTML = Object.entries(MOOD_RECIPES).map(([id,m]) => `
+  <button class="mood" data-mood="${id}" aria-pressed="false">
+    <span class="art" style="background:linear-gradient(165deg,${m.gradient[0]},${m.gradient[1]})">
+      <svg viewBox="0 0 100 78" aria-hidden="true">${ART[m.art]}</svg><b>${m.label}</b>
+    </span>
+    <span class="foot"><em>${m.note}</em>
+      <span class="tick"><svg width="7" height="7" viewBox="0 0 7 7" aria-hidden="true"><path d="M1.4 3.5L2.9 5L5.6 2" stroke="var(--accent-ink)" stroke-width="1.4" stroke-linecap="round" fill="none"/></svg></span>
+    </span>
+  </button>`).join("");
+
+$("#moods").addEventListener("click", e => {
+  const b = e.target.closest(".mood"); if (!b) return;
+  S.mood = b.dataset.mood;
+  document.querySelectorAll(".mood").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  $("#go").disabled = false; $("#mood-hint").textContent = "";
+});
+
+$("#att").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  S.attention = b.dataset.att;
+  document.querySelectorAll("#att button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+});
+
+$("#origins").innerHTML = ORIGINS.map(o =>
+  `<button data-code="${o.code}" aria-pressed="${o.code === S.origin}">${o.label}</button>`).join("");
+
+$("#origins").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  S.origin = b.dataset.code;
+  document.querySelectorAll("#origins button")
+    .forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  $("#origin-note").textContent =
+    (ORIGINS.find(o => o.code === S.origin).label).toLowerCase();
+});
+
+function paintWave(){
+  $("#wave").innerHTML = BANDS.map((v,i) =>
+    `<button data-i="${i}" class="${v <= S.mins ? "on" : ""}" style="height:${11+i*3.2}px" aria-label="${v} minutes"></button>`).join("");
+  $("#mins").textContent = S.mins + " MIN";
+}
+$("#wave").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  S.mins = BANDS[+b.dataset.i]; paintWave();
+});
+paintWave();
+
+function pickThree(ranked){
+  let avail = ranked.filter(x => !S.seen.has(x.id));
+  if (avail.length < 3){ S.seen.clear(); avail = ranked; }
+  if (!avail.length) return [];
+
+  const safe  = avail[0];
+  const rest  = avail.filter(x => x !== safe);
+  const quick = [...rest].sort((a,b) => a.minutes - b.minutes)[0];
+  const left  = rest.filter(x => x !== quick);
+  const sameG = new Set(safe.genres);
+  const off   = left.filter(x => !x.genres.some(g => sameG.has(g)));
+  const bag   = off.length ? off : left;
+  const wild  = bag[Math.floor(Math.random() * Math.min(bag.length, 8))];
+
+  const picks = [
+    {slot:"safe",  tag:"THE SAFE ONE",  item:safe},
+    {slot:"quick", tag:"THE QUICK ONE", item:quick},
+    {slot:"wild",  tag:"THE WILDCARD",  item:wild}
+  ].filter(p => p.item);
+  picks.forEach(p => S.seen.add(p.item.id));
+  return picks;
+}
+
+let lastPicks = [];
+
+function paint(picks){
+  lastPicks = picks;
+  const g = MOOD_RECIPES[S.mood].gradient;
+  $("#cards").innerHTML = picks.map((p,i) => {
+    const it = p.item;
+    const bg = it.poster
+      ? `background-image:url(${it.poster})`
+      : `background:linear-gradient(165deg,${g[0]},${g[1]})`;
+    const tags = [
+      it.network ? `<span class="pv">${it.network}</span>` : "",
+      it.country ? `<span class="pv">${it.country}</span>` : "",
+      it.subtitled ? `<span class="pv sub">subtitled</span>` : ""
+    ].join("");
+    const maths = S.debug
+      ? `<div class="maths"><b>score ${it.score}</b><br>${it.why.join("<br>")}</div>` : "";
+    return `
+      <button class="card">
+        <span class="poster" style="${bg}">
+          ${it.poster ? "" : `<svg viewBox="0 0 84 116" aria-hidden="true">
+            <circle cx="42" cy="42" r="27" fill="#fff" opacity=".07"/>
+            <circle cx="42" cy="42" r="16" fill="#fff" opacity=".1"/>
+            <path d="M0 86 Q21 74 42 84 Q63 94 84 80 L84 116 L0 116 Z" fill="#000" opacity=".35"/>
+          </svg>`}
+        </span>
+        <span class="body">
+          <span class="slot ${p.slot}">${p.tag}</span>
+          <h3>${it.title}</h3>
+          <div class="meta">${it.minutes} MIN · ${it.genres.slice(0,2).join(" / ").toUpperCase()}</div>
+          <div class="why">"${REASONS[p.slot][i % 3]}"</div>
+          <div class="where">${tags}</div>
+          ${maths}
+        </span>
+      </button>`;
+  }).join("");
+
+  const eyes = S.attention === "half" ? "EYES DOWN" : "EYES UP";
+  const org = S.origin === "any" ? "ANY ORIGIN"
+            : ORIGINS.find(o => o.code === S.origin).label;
+  $("#res-sub").textContent =
+    `${MOOD_RECIPES[S.mood].label.toUpperCase()} · UNDER ${S.mins} MIN · ${eyes} · ${org}`;
+}
+
+async function run(){
+  $("#cards").innerHTML = `<div class="loading">PLATING UP…</div>`;
+  try {
+    const ranked = await getCandidates({mood:S.mood, maxMins:S.mins, attention:S.attention, origin:S.origin});
+    const picks = pickThree(ranked);
+    if (!picks.length){
+      $("#cards").innerHTML = `<div class="err">Nothing clears the bar for that combination.<br>Try a longer meal, a wider origin, or eyes on the screen.</div>`;
+      return;
+    }
+    paint(picks);
+  } catch(err){
+    $("#cards").innerHTML = `<div class="err">${err.message}</div>`;
+  }
+}
+
+$("#go").addEventListener("click", async () => {
+  S.shuffles = 0; S.seen.clear();
+  $("#setup").classList.add("hidden");
+  $("#results").classList.remove("hidden");
+  $("#nudge").classList.add("hidden");
+  $("#shuffle").disabled = false;
+  $("#shuffle").textContent = "Show me three others";
+  window.scrollTo({top:0,behavior:"smooth"});
+  await run();
+});
+
+$("#shuffle").addEventListener("click", async () => {
+  S.shuffles++;
+  await run();
+  if (S.shuffles >= 2){
+    $("#shuffle").disabled = true;
+    $("#shuffle").textContent = "That's three rounds";
+    $("#nudge").classList.remove("hidden");
+  }
+});
+
+$("#back").addEventListener("click", () => {
+  $("#results").classList.add("hidden");
+  $("#setup").classList.remove("hidden");
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+
+$("#signin").addEventListener("click", function(){
+  this.textContent = "Coming in the signed-in build"; this.disabled = true;
+});
+</script>
+</body>
+</html>
