@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%22-182%20-8%20354%20314%22%3E%3Cpath%20fill%3D%22%232E9E78%22%20d%3D%22M-28%20211%20C-96%20169%20-91%20121%20-42%2079%20C-7%2049%207%2026%20-6%200%20C49%2037%2051%2082%209%20119%20C-34%20157%20-37%20181%20-28%20211%20Z%22%2F%3E%3Cg%20fill%3D%22%230C0E0D%22%20transform%3D%22rotate%28-26%20-33%20103%29%22%3E%3Crect%20x%3D%22-65%22%20y%3D%2249%22%20width%3D%2212%22%20height%3D%2218%22%20rx%3D%221.5%22%2F%3E%3Crect%20x%3D%22-72%22%20y%3D%2273%22%20width%3D%2212%22%20height%3D%2218%22%20rx%3D%221.5%22%2F%3E%3Crect%20x%3D%22-76%22%20y%3D%2297%22%20width%3D%2212%22%20height%3D%2218%22%20rx%3D%221.5%22%2F%3E%3Crect%20x%3D%22-75%22%20y%3D%22121%22%20width%3D%2212%22%20height%3D%2218%22%20rx%3D%221.5%22%2F%3E%3Crect%20x%3D%22-69%22%20y%3D%22145%22%20width%3D%2212%22%20height%3D%2218%22%20rx%3D%221.5%22%2F%3E%3C%2Fg%3E%3Cpath%20fill%3D%22%23F2EFE6%22%20d%3D%22M-176%20221%20C-130%20242%20-58%20237%203%20213%20C70%20187%20126%20202%20145%20222%20C166%20246%20118%20276%2044%20286%20C-44%20298%20-131%20274%20-176%20242%20C-118%20260%20-43%20269%2032%20254%20C95%20242%20128%20221%20100%20214%20C65%20204%2015%20225%20-45%20239%20C-101%20252%20-146%20243%20-176%20221%20Z%22%2F%3E%3C%2Fsvg%3E">
 <title>streaminghot — pick before it goes cold</title>
 <style>
 :root{
@@ -23,16 +24,26 @@ html[data-theme="light"]{
   --accent:#0A21C0; --accent-ink:#FFFFFF; --accent-dim:#5457A0; --accent-deep:#050A44;
   --neutral-a:#2C2E3A; --neutral-b:#141619;
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{background:var(--bg);color:var(--ink);font-family:var(--sans);min-height:100vh;
-  padding:20px 18px 44px;transition:background .35s ease,color .35s ease}
-.wrap{max-width:620px;margin:0 auto}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;min-width:0}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);
+  min-height:100svh;overflow-x:hidden;
+  padding:clamp(14px,4vw,20px) calc(clamp(12px,4vw,18px) + env(safe-area-inset-right))
+          calc(44px + env(safe-area-inset-bottom))
+          calc(clamp(12px,4vw,18px) + env(safe-area-inset-left));
+  transition:background .35s ease,color .35s ease}
+img,svg,video{max-width:100%}
+/* anything holding text the catalogue supplies must be able to break */
+h1,h2,h3,p,span,div,em,strong{overflow-wrap:break-word}
+.wrap{max-width:620px;margin:0 auto;width:100%}
 
-.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:34px}
-.brand{display:flex;align-items:center;gap:9px}
-.brand h1{font-size:19px;font-weight:600;letter-spacing:-.045em;line-height:1}
+.top{display:flex;justify-content:space-between;align-items:center;
+  gap:10px;flex-wrap:wrap;margin-bottom:clamp(24px,6vw,34px)}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.mark{flex:0 0 auto;display:block;height:clamp(26px,7vw,32px);width:auto}
+.brand h1{font-size:clamp(17px,4.6vw,20px);font-weight:600;letter-spacing:-.045em;line-height:1}
 .brand h1 i{font-style:normal;color:var(--accent)}
-.tools{display:flex;align-items:center;gap:8px}
+.tools{display:flex;align-items:center;gap:8px;flex:0 0 auto}
 .chip{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ink-2);
   background:var(--surface);border:1px solid var(--line);border-radius:var(--r-pill);
   padding:7px 11px;cursor:pointer;transition:border-color .2s,color .2s}
@@ -41,26 +52,37 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);min-height:10
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 .lede{margin-bottom:28px}
-.lede p{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--ink-2);margin-bottom:9px}
+.lede p{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;
+  font-weight:600;letter-spacing:.2em;color:var(--ink);margin-bottom:11px}
+.lede p::before{content:"";flex:0 0 auto;width:3px;height:13px;border-radius:2px;background:var(--accent)}
 .lede h2{font-size:clamp(30px,8.5vw,40px);line-height:.98;letter-spacing:-.04em;font-weight:600}
 .lede h2 em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--accent)}
 
-.sect{margin-bottom:26px}
-.sect-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px}
-.sect-top span:first-child{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--ink-2)}
-.sect-top span:last-child{font-family:var(--mono);font-size:11px;color:var(--accent)}
+.sect{margin-bottom:30px}
+.sect-top{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:14px}
+/* label reads as a section divider: accent tick, strong text, rule to the value */
+.sect-top span:first-child{
+  display:flex;align-items:center;gap:12px;flex:1;min-width:0;
+  font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.2em;color:var(--ink)}
+.sect-top span:first-child::before{
+  content:"";flex:0 0 auto;width:3px;height:13px;border-radius:2px;background:var(--accent)}
+.sect-top span:first-child::after{
+  content:"";flex:1;height:1px;background:var(--line-2)}
+.sect-top span:last-child{flex:0 0 auto;font-family:var(--mono);font-size:11px;
+  font-weight:600;letter-spacing:.06em;color:var(--accent)}
 
-.moods{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-@media (max-width:460px){.moods{grid-template-columns:repeat(2,1fr)}}
+/* fits as many as comfortably sit at >=116px, so it reflows at any width */
+.moods{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(116px,1fr))}
+@media (max-width:359px){.moods{grid-template-columns:1fr 1fr}}
 .mood{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);
   overflow:hidden;cursor:pointer;text-align:left;font-family:inherit;color:inherit;
   transition:border-color .2s,transform .12s}
 .mood:hover{border-color:var(--line-2)}
 .mood:active{transform:scale(.985)}
 .mood[aria-pressed="true"]{border-color:var(--accent)}
-.mood .art{height:78px;position:relative;display:block}
+.mood .art{height:clamp(70px,20vw,88px);position:relative;display:block}
 .mood .art svg{position:absolute;inset:0;width:100%;height:100%}
-.mood .art b{position:absolute;left:9px;bottom:8px;font-size:14px;font-weight:600;letter-spacing:-.02em;color:#fff}
+.mood .art b{position:absolute;left:9px;right:9px;bottom:8px;font-size:clamp(13px,3.4vw,15px);font-weight:600;letter-spacing:-.02em;color:#fff}
 .mood .foot{padding:7px 9px;display:flex;justify-content:space-between;align-items:center;gap:6px}
 .mood .foot em{font-family:var(--mono);font-style:normal;font-size:11px;color:var(--ink-3)}
 .mood[aria-pressed="true"] .foot em{color:var(--accent-dim)}
@@ -68,15 +90,19 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);min-height:10
   flex:0 0 auto;align-items:center;justify-content:center}
 .mood[aria-pressed="true"] .tick{display:flex}
 
-.wave{display:flex;gap:3px;align-items:flex-end;height:34px;margin-bottom:8px}
-.wave button{flex:1;background:var(--line-2);border:0;border-radius:2px;padding:0;cursor:pointer;transition:background .18s}
-.wave button.on{background:var(--accent)}
+/* the button fills the full height so it is easy to hit; the bar is drawn by ::after */
+.wave{display:flex;gap:3px;align-items:stretch;height:clamp(40px,11vw,46px);margin-bottom:8px}
+.wave button{flex:1 1 0;background:none;border:0;padding:0;cursor:pointer;
+  display:flex;align-items:flex-end;min-width:0}
+.wave button::after{content:"";display:block;width:100%;height:var(--h,12px);
+  background:var(--line-2);border-radius:2px;transition:background .18s,height .18s}
+.wave button.on::after{background:var(--accent)}
 .scale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--ink-2)}
 .scale span{display:inline-flex;align-items:center;gap:6px}
 .scale svg{flex:0 0 auto;opacity:.85}
 
-.att{display:flex;gap:8px}
-.att button{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);
+.att{display:flex;gap:8px;flex-wrap:wrap}
+.att button{flex:1 1 150px;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);
   padding:11px 13px;text-align:left;font-family:inherit;color:inherit;cursor:pointer;transition:border-color .2s}
 .att button[aria-pressed="true"]{border-color:var(--accent)}
 .att strong{display:block;font-size:13px;font-weight:600;letter-spacing:-.015em;margin-bottom:2px}
@@ -106,14 +132,14 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);min-height:10
   overflow:hidden;display:flex;text-align:left;width:100%;font-family:inherit;color:inherit;
   cursor:pointer;transition:border-color .2s}
 .card:hover{border-color:var(--line-2)}
-.card .poster{width:84px;flex:0 0 auto;position:relative;min-height:116px;overflow:hidden;
+.card .poster{width:clamp(66px,23vw,96px);flex:0 0 auto;position:relative;min-height:116px;overflow:hidden;
   background-size:cover;background-position:center}
 .card .poster svg{position:absolute;inset:0;width:100%;height:100%}
 .card .body{padding:12px 14px;flex:1;min-width:0}
 .slot{font-family:var(--mono);font-size:11px;letter-spacing:.12em;margin-bottom:5px}
 .slot.safe{color:var(--accent)}
 .slot.quick,.slot.wild{color:var(--ink-2)}
-.card h3{font-size:15px;font-weight:600;letter-spacing:-.015em;margin-bottom:3px}
+.card h3{font-size:clamp(14px,3.8vw,16px);font-weight:600;letter-spacing:-.015em;margin-bottom:3px}
 .meta{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin-bottom:8px}
 .why{font-family:var(--serif);font-size:13px;line-height:1.45;color:var(--ink-2);font-style:italic}
 .where{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
@@ -144,16 +170,37 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);min-height:10
 .foot-note{margin-top:26px;padding-top:16px;border-top:1px solid var(--line);
   font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--ink-3)}
 .foot-note a{color:var(--accent-dim)}
+.upd-row{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
+#upd-msg{flex:1 1 180px;min-width:0}
+.upd-btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;
+  background:transparent;border:1px solid var(--accent);color:var(--accent);
+  border-radius:var(--r-pill);padding:9px 16px;cursor:pointer;transition:opacity .2s}
+.upd-btn:hover{opacity:.75}
+.upd-btn:disabled{opacity:.4;cursor:not-allowed}
+#upd-msg{font-family:var(--mono);font-size:11px;color:var(--ink-2)}
+
+/* ── tablet: use the extra width without going two-column ── */
+@media (min-width:640px) and (max-width:899px){
+  .wrap{max-width:680px}
+  .card .poster{width:clamp(96px,17vw,124px)}
+  .lede h2{font-size:clamp(34px,5.6vw,44px)}
+}
+
+/* ── short landscape phones: don't let a sticky column trap content ── */
+@media (max-height:520px){
+  .lede{position:static !important}
+}
 
 /* ── desktop ─────────────────────────────────────────────── */
 @media (min-width:900px){
+  .mark{height:36px}
   body{padding:36px 40px 72px}
   .wrap{max-width:1140px}
   .top{margin-bottom:56px}
   .brand h1{font-size:22px}
 
-  #setup{display:grid;grid-template-columns:minmax(300px,1fr) minmax(420px,1.15fr);
-    gap:0 64px;align-items:start}
+  #setup{display:grid;grid-template-columns:minmax(260px,1fr) minmax(360px,1.15fr);
+    gap:0 clamp(32px,5vw,64px);align-items:start}
   .lede{grid-column:1;grid-row:1;position:sticky;top:36px;margin:0;padding-right:20px}
   .lede p{font-size:11px;margin-bottom:14px}
   .lede h2{font-size:clamp(44px,4.4vw,62px);line-height:.94}
@@ -168,7 +215,9 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);min-height:10
   .res-head h2{font-size:clamp(32px,3.4vw,44px)}
   .cards{flex-direction:row;align-items:stretch;gap:14px;margin-bottom:22px}
   .card{flex-direction:column;flex:1 1 0;min-width:0}
-  .card .poster{width:100%;min-height:0;height:230px}
+  .cards{flex-wrap:wrap}
+  .card{min-width:200px}
+  .card .poster{width:100%;min-height:0;height:clamp(180px,19vw,240px)}
   .card .body{padding:15px 16px 17px;display:flex;flex-direction:column}
   .card h3{font-size:17px}
   .why{margin-bottom:auto}
@@ -192,17 +241,16 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);min-height:10
 
   <header class="top">
     <div class="brand">
-      <svg width="15" height="19" viewBox="0 0 16 20" fill="none" aria-hidden="true">
-        <path d="M8 2.5 Q11 6.3 9.5 10 Q8 12 8 14.8" stroke="var(--accent)" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-        <path d="M4.6 4.4 Q6.6 7.7 5.6 11" stroke="var(--accent-deep)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
-        <path d="M11.4 4.4 Q13.4 7.7 12.4 11" stroke="var(--accent-deep)" stroke-width="1.3" fill="none" stroke-linecap="round"/>
-        <ellipse cx="8" cy="17" rx="6" ry="1.6" fill="var(--accent)" opacity=".3"/>
+      <svg class="mark" viewBox="-182 -8 354 314" fill="none" aria-hidden="true">
+        <path fill="var(--accent)" d="M-28 211 C-96 169 -91 121 -42 79 C-7 49 7 26 -6 0 C49 37 51 82 9 119 C-34 157 -37 181 -28 211 Z"/>
+        <g fill="var(--bg)" transform="rotate(-26 -33 103)"><rect x="-65" y="49" width="12" height="18" rx="1.5"/><rect x="-72" y="73" width="12" height="18" rx="1.5"/><rect x="-76" y="97" width="12" height="18" rx="1.5"/><rect x="-75" y="121" width="12" height="18" rx="1.5"/><rect x="-69" y="145" width="12" height="18" rx="1.5"/></g>
+        <path fill="var(--ink)" d="M-176 221 C-130 242 -58 237 3 213 C70 187 126 202 145 222 C166 246 118 276 44 286 C-44 298 -131 274 -176 242 C-118 260 -43 269 32 254 C95 242 128 221 100 214 C65 204 15 225 -45 239 C-101 252 -146 243 -176 221 Z"/>
       </svg>
       <h1>streaming<i>hot</i></h1>
     </div>
     <div class="tools">
-      <button class="chip" id="debug" aria-pressed="false">MATHS</button>
-      <button class="chip" id="theme">DARK</button>
+      <button class="chip hidden" id="debug" aria-pressed="false">MATHS</button>
+      <button class="chip" id="theme" aria-label="Switch to light theme">LIGHT</button>
     </div>
   </header>
 
@@ -277,9 +325,13 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);min-height:10
 
   <p class="foot-note">
     Show data from <a href="https://www.tvmaze.com">TVmaze</a>, CC BY-SA 4.0.<br>
-    Origin is where a show was made, not where you can stream it —<br>
-    TVmaze has no availability data. Rerun <b>buildCatalogue()</b> in the<br>
-    console for the full index, then swap in the new catalogue.js.
+    <span id="cat-stat">checking catalogue…</span><br>
+    Origin is where a show was made, not where you can stream it.
+    TVmaze has no availability data.
+    <span class="upd-row">
+      <button class="upd-btn" id="upd">Get the latest shows</button>
+      <span id="upd-msg"></span>
+    </span>
   </p>
 </div>
 
@@ -442,6 +494,15 @@ function scoreTitle(show, { mood, maxMins, attention, origin }) {
 
 let CATALOGUE = null;
 
+/* A catalogue saved by the update button beats the shipped catalogue.js */
+try {
+  const saved = localStorage.getItem("sh_catalogue_v1");
+  if (saved){
+    const parsed = JSON.parse(saved);
+    if (Array.isArray(parsed) && parsed.length) window.CATALOGUE = parsed;
+  }
+} catch(e){}
+
 function normalise(s){
   return {
     id: s.id,
@@ -501,35 +562,81 @@ async function getCandidates(ctx){
    TVmaze allows ~20 calls per 10s, so this paces itself.
    ═══════════════════════════════════════════════════════════════════ */
 
-async function buildCatalogue(pages = CONFIG.BUILD_PAGES){
-  const out = [];
-  const limit = pages > 0 ? pages : Infinity;
-  for (let p = 0; p < limit; p++){
-    try {
-      const r = await fetch(`${CONFIG.TVMAZE}/shows?page=${p}`);
-      if (r.status === 404) break;                       // end of index
-      if (r.status === 429){ await new Promise(s=>setTimeout(s,3000)); p--; continue; }
-      const batch = (await r.json()).map(normalise).filter(s =>
-        s.minutes && s.minutes >= 8 && s.minutes <= 90 &&
-        s.rating >= CONFIG.FLOOR.rating &&
-        s.popularity >= CONFIG.FLOOR.popularity &&
-        s.genres.length && s.poster
-      );
-      out.push(...batch);
-      if (p % 10 === 0) console.log(`page ${p} — kept ${out.length} so far`);
-      await new Promise(s => setTimeout(s, 520));        // stay under the rate limit
-    } catch(e){ console.warn(`page ${p} failed`, e); }
-  }
-  const js = "window.CATALOGUE=" + JSON.stringify(out) + ";";
-  const a = Object.assign(document.createElement("a"), {
-    href: URL.createObjectURL(new Blob([js], {type:"text/javascript"})),
-    download: "catalogue.js"
-  });
-  a.click();
-  console.log(`Done. ${out.length} titles saved to catalogue.js — replace the old one.`);
-  return out;
+/* TVmaze pages the index by ASCENDING id, so the newest shows live on the
+   LAST pages. We find the end, then walk backwards — newest first — so a
+   short run still gets you current television. */
+
+const STORE_KEY = "sh_catalogue_v1";
+
+function pageUrl(p){ return `${CONFIG.TVMAZE}/shows?page=${p}`; }
+
+async function pageExists(p){
+  try { const r = await fetch(pageUrl(p)); return r.status === 200; }
+  catch(e){ return false; }
 }
-window.buildCatalogue = buildCatalogue;
+
+async function findLastPage(say){
+  let lo = 0, hi = 64;
+  say("finding the end of the index…");
+  while (await pageExists(hi)){ lo = hi; hi *= 2; if (hi > 8192) break; }
+  while (lo + 1 < hi){
+    const mid = Math.floor((lo + hi) / 2);
+    if (await pageExists(mid)) lo = mid; else hi = mid;
+  }
+  return lo;
+}
+
+function keep(s){
+  return s.minutes && s.minutes >= 8 && s.minutes <= 90 &&
+         s.rating >= CONFIG.FLOOR.rating &&
+         s.popularity >= CONFIG.FLOOR.popularity &&
+         s.genres.length && s.poster;
+}
+
+/* pagesBack: how many pages of newest shows to pull. 60 ≈ 15,000 newest ids. */
+async function updateCatalogue(pagesBack = 60, say = console.log){
+  const last = await findLastPage(say);
+  const fresh = [];
+  let scanned = 0;
+
+  for (let p = last; p > Math.max(last - pagesBack, -1); p--){
+    try {
+      const r = await fetch(pageUrl(p));
+      if (r.status === 429){ await new Promise(s=>setTimeout(s,3000)); p++; continue; }
+      if (!r.ok) continue;
+      const batch = (await r.json()).map(normalise).filter(keep);
+      fresh.push(...batch);
+      scanned++;
+      say(`page ${p} · ${fresh.length} new titles found`);
+      await new Promise(s => setTimeout(s, 520));
+    } catch(e){ /* skip a bad page rather than stop */ }
+  }
+
+  // merge with whatever we already have, newest wins on id clash
+  const base = (window.CATALOGUE || []);
+  const map = new Map(base.map(s => [s.id, s]));
+  fresh.forEach(s => map.set(s.id, s));
+  const merged = [...map.values()];
+
+  window.CATALOGUE = merged;
+  CATALOGUE = merged;
+
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify(merged));
+    say(`done — ${merged.length} titles, saved to this browser`);
+  } catch(e){
+    const a = Object.assign(document.createElement("a"), {
+      href: URL.createObjectURL(new Blob(
+        ["window.CATALOGUE=" + JSON.stringify(merged) + ";"], {type:"text/javascript"})),
+      download: "catalogue.js"
+    });
+    a.click();
+    say(`done — ${merged.length} titles, downloaded as catalogue.js`);
+  }
+  return merged;
+}
+window.updateCatalogue = updateCatalogue;
+window.buildCatalogue = updateCatalogue;
 
 /* ═══════════════════════════════════════════════════════════════════
    6. SAMPLE DATA — hand-written, replaced by the catalogue
@@ -608,10 +715,17 @@ const $ = s => document.querySelector(s);
 const BANDS = [10,16,22,28,36,45,58,75];
 
 $("#theme").addEventListener("click", () => {
-  const n = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-  document.documentElement.dataset.theme = n;
-  $("#theme").textContent = n.toUpperCase();
+  const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  document.documentElement.dataset.theme = next;
+  // the label names where the tap takes you, not where you are
+  const other = next === "dark" ? "LIGHT" : "DARK";
+  $("#theme").textContent = other;
+  $("#theme").setAttribute("aria-label", `Switch to ${other.toLowerCase()} theme`);
 });
+
+/* Tuning tool, not a user feature. Add ?debug to the URL to reveal it —
+   it shows how each title scored, which is how you calibrate the recipes. */
+if (location.search.includes("debug")) $("#debug").classList.remove("hidden");
 
 $("#debug").addEventListener("click", () => {
   S.debug = !S.debug;
@@ -623,10 +737,11 @@ $("#debug").addEventListener("click", () => {
 (function(){
   const h = new Date().getHours();
   let k = "TONIGHT", b = 28;
-  if (h < 11)       { k = "THIS MORNING";   b = 16; }
-  else if (h < 15)  { k = "LUNCH";          b = 22; }
+  if (h < 6)        { k = "STILL UP";       b = 22; }
+  else if (h < 11)  { k = "THIS MORNING";   b = 16; }
+  else if (h < 15)  { k = "LUNCHTIME";      b = 22; }
   else if (h < 18)  { k = "THIS AFTERNOON"; b = 22; }
-  else if (h >= 22) { k = "LATE";           b = 22; }
+  else if (h >= 22) { k = "A LATE ONE";     b = 22; }
   $("#kicker").textContent = k; S.mins = b;
 })();
 
@@ -667,7 +782,7 @@ $("#origins").addEventListener("click", e => {
 
 function paintWave(){
   $("#wave").innerHTML = BANDS.map((v,i) =>
-    `<button data-i="${i}" class="${v <= S.mins ? "on" : ""}" style="height:${11+i*3.2}px" aria-label="${v} minutes"></button>`).join("");
+    `<button data-i="${i}" class="${v <= S.mins ? "on" : ""}" style="--h:${30 + i*9}%" aria-label="${v} minutes"></button>`).join("");
   $("#mins").textContent = S.mins + " MIN";
 }
 $("#wave").addEventListener("click", e => {
@@ -787,6 +902,40 @@ $("#back").addEventListener("click", () => {
 
 $("#signin").addEventListener("click", function(){
   this.textContent = "Coming in the signed-in build"; this.disabled = true;
+});
+
+/* ── catalogue health readout ───────────────────────────────
+   Tells you at a glance whether you are on a stale catalogue.
+   TVmaze IDs ascend by date added, so a low max ID means the
+   build stopped early or the old file is still in place.      */
+async function showCatStat(){
+  const el = $("#cat-stat");
+  try {
+    const pool = await loadPool();
+    const maxId = Math.max(...pool.map(s => s.id));
+    el.innerHTML = maxId < 50000
+      ? `<b style="color:var(--accent)">${pool.length} titles — older shows only.</b>
+         Tap below to pull in current television.`
+      : `${pool.length} titles, up to date · data from
+         <a href="https://www.tvmaze.com">TVmaze</a>, CC BY-SA 4.0`;
+  } catch(e){ el.textContent = "No catalogue loaded — tap below to fetch one."; }
+}
+showCatStat();
+
+$("#upd").addEventListener("click", async function(){
+  this.disabled = true;
+  const msg = $("#upd-msg");
+  const t0 = Date.now();
+  try {
+    await updateCatalogue(60, s => { msg.textContent = s; });
+    await showCatStat();
+    S.seen.clear();
+    msg.textContent += ` · ${Math.round((Date.now()-t0)/1000)}s`;
+    this.textContent = "Updated";
+  } catch(e){
+    msg.textContent = "Update failed — check your connection and try again.";
+    this.disabled = false;
+  }
 });
 </script>
 </body>
