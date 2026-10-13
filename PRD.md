@@ -1,6 +1,6 @@
 # streaminghot — Product Requirements Document
 
-**Version 1.0 · North star document**
+**Version 1.1 · North star document**
 
 *When a decision feels uncertain, the answer should be in here. If it isn't, add it.*
 
@@ -16,7 +16,7 @@
 | **Position** | The meal is the occasion. Decisiveness is the character. |
 | **Primary user** | Adults who eat in front of a screen, 25–45, paying for 2–5 streaming services |
 | **Core promise** | One confident answer, in under ten seconds, that fits the time your meal takes |
-| **Business model** | Free and unlimited forever. Affiliate revenue from day one. One-time unlock for household features later. |
+| **Business model** | Free and unlimited forever. Affiliate from day one. Three free tickets, then a one-time $7 unlock. |
 | **Platform** | Installable web app. No native apps. |
 | **Launch markets** | US, UK, Canada, Australia, New Zealand, Ireland, India |
 | **Timeline** | Free tier properly built over a few months |
@@ -142,7 +142,7 @@ Defensibility is not technology or data — competitors have both. It is **the w
 
 - **Household mode** — two profiles, one pick that satisfies both
 - Cross-device memory as part of the same bundle
-- One-time unlock
+- Three free tickets, then a one-time $7 unlock
 - Ambient pre-pick notifications
 
 ### Never
@@ -343,36 +343,113 @@ History must record *context*, not just titles. "Rejected Severance" teaches not
 
 ## 10. Monetisation
 
-### Decision: free and unlimited, forever
+### The model
 
-**Rejected: gating by usage count.** A five-search wall is the worst available option. The user hits it, searches the web, and finds a free competitor in thirty seconds. We would be converting a user into a referral for someone else. In a market with abundant free alternatives, the free tier *is* the growth engine.
+**Free tier: unlimited, forever. Paid tier: sampled, then purchased.**
 
-**Rejected: subscription.** Recurring revenue requires daily indispensable value. The user already pays for four streaming services; a fifth charge to help them use the other four is a hard sell.
+The limit is never placed on the free product. It is placed on the *premium experience*. Nothing is ever taken away from a user — they simply get to feel the better thing a few times before deciding whether to keep it.
 
-**Accepted: affiliate from day one.** Outbound links carry affiliate tags where programmes exist (rentals and purchases on Prime, Apple TV). Invisible to the user, zero friction, scales with usage rather than conversion.
-
-**Accepted: one-time unlock, later.** Charge once — $5 to $9 — for work that is genuinely additional:
-
-- Household mode (the actual value)
-- Cross-device memory (the mechanism)
-- Ambient pre-picks
-
-Market the household. Nobody pays for sync; people pay to stop negotiating with their partner.
-
-### Trigger rules, when it exists
-
-| Rule | Reason |
+| Mode | Access |
 |---|---|
-| Count distinct **days** of use | Five picks in one evening is frustration, not habit |
-| Count accepted picks only, never re-rolls | Charging faster for our own failure is perverse |
-| Offer **after** a pick, on the next screen | Never paywall someone with hot food |
-| Declining keeps free tier and history | A soft wall preserves the funnel |
+| Three-option mode | Unlimited, free, forever, no account |
+| One-pick ticket mode | **Three free tickets**, then a one-time payment |
+
+### Why not gate the free tier
+
+**Rejected: limiting searches (three, five, or any number).**
+
+The failure mode is specific and fatal. A user hits the wall, searches the web, and lands on NightPicks, Reelgood or any of a dozen free no-signup tools within thirty seconds. We would be spending acquisition effort to hand users to competitors. In a market with abundant free substitutes, the free tier is the only growth engine we have.
+
+**Rejected: subscription.** Recurring revenue requires daily indispensable value. The user already pays for several streaming services; a further monthly charge to help them use those is a hard sell.
+
+**Accepted: affiliate revenue from day one.** Outbound links carry affiliate tags where programmes exist. Invisible, frictionless, scales with usage rather than conversion.
+
+### What the paid tier actually is
+
+"One pick instead of three" undersells it. Four things change, and only the first concerns quantity:
+
+| Change | What the user notices |
+|---|---|
+| **It decides** | One ticket, printed. No slots, no comparing, no labels. |
+| **It knows them** | The reason references what they've watched, not a template |
+| **It never repeats** | Durable history, across devices |
+| **It only shows what they can watch** | Services declared once, respected forever |
+
+The personalised reason line is the thing people will describe to a friend. Everything else is table stakes by comparison.
+
+### When the trial is offered — and why not on day one
+
+**Problem:** on first use there is no history, so the personalisation cannot be demonstrated. Offering the trial immediately would sample the weakest version of the thing being sold.
+
+**Rule:** the trial is offered only once local history is substantial enough for the model to say something specific — a minimum of **five accepted picks across at least three separate days.**
+
+Framing at that moment:
+
+> *"You've let me pick five times. Want me to just decide instead? Three on the house."*
+
+Now the first ticket can reference what they actually watched. That is the moment the product becomes impressive rather than merely functional.
+
+### The three tickets
+
+- Full experience, no degradation, no expiry date
+- The serial number does the counting quietly: NO. 001, NO. 002, NO. 003
+- **No countdown banner, no urgency timer, no nag.** This is a product about reducing pressure; manufacturing pressure is off-brand.
+
+### The ask
+
+Placed **after** the third pick is accepted and the user has tapped through to watch. Never before a pick, never while they are waiting to eat.
+
+The screen states plainly what the unlock provides:
+
+> **That's three nights sorted.**
+>
+> Keep the ticket and I'll also:
+> - Never offer you something you've already seen
+> - Only pick from services you actually pay for
+> - Remember where you left off in every series
+> - Work the same on your phone and your laptop
+> - Decide for two of you, when you want that
+>
+> **One payment. No subscription. $7.**
+
+The honest number does the persuading. "Three nights sorted" is verifiable against the user's own memory, which no marketing claim can match.
+
+### Price
+
+**$7, one time.** Low enough to be an impulse, high enough not to read as disposable. $5 reads trivial; $9 invites comparison with a month of a real streaming service.
+
+### If they decline
+
+They return to three-option mode and **keep everything** — history, continue-watching, preferences. Nothing is removed.
+
+The offer returns after a further stretch of use, worded differently. A hard wall converts a few and loses the rest; a soft wall keeps users in the product, and a meaningful share convert on a later ask once the habit is deeper.
+
+### Payment rails
+
+| Platform | Mechanism | Cost |
+|---|---|---|
+| Web (primary) | Stripe Checkout | ~3% |
+| Native, if ever | Purchase on the web only, app reads entitlement | 0% |
+
+**Web is the cheapest place to charge, not the hardest.** Stripe works without approval processes or fixed fees, and we keep roughly 97%.
+
+Native app stores are the restriction, not the web. External payment links are permitted only in the US (currently 0%), the EU (20%), Japan (21%) and South Korea (26%). Everywhere else they are prohibited and in-app purchase applies at 30%, or 15% under the Small Business Program.
+
+**Five of our seven launch markets — UK, Canada, Australia, New Zealand, India — fall under "everywhere else."** Native in-app purchase would cost $1–2 on a $7 unlock versus roughly 20 cents on the web. The US 0% rate is also unstable: Apple has proposed a 15% link-out fee and the matter is before the Supreme Court. It should not be planned around.
+
+Developer accounts also break the zero-budget constraint: $99/year for Apple, $25 once for Google.
+
+### If native apps are wanted later
+
+Use **web-first billing**, the model Netflix and Spotify operate. Accounts are created and paid for on the website; the app never mentions payment and simply reads entitlement. Legal in every market, zero commission, no in-app purchase integration required.
+
+The honest cost is conversion friction — no impulse upgrades, since the user must leave the app and return. Acceptable for a large service, more noticeable for a $7 utility. This is a distribution decision, not a revenue one, and should only be taken once retention is proven.
 
 ### Honest expectation
 
-In a crowded market with free substitutes, this is more likely to become a well-loved free tool with modest affiliate income than a business. That is a legitimate outcome. **Building the paywall before proving retention would be the expensive mistake.**
+Conversion on a one-time unlock in a free utility is typically low single digits. The structure above is deliberately optimised for **retention over conversion**, because in a crowded market with free substitutes, keeping users is worth more than converting a small number of them.
 
----
+This is more likely to become a well-loved free tool with modest affiliate income than a business. That is a legitimate outcome. Building the paywall before proving retention would be the expensive mistake.
 
 ## 11. Regions
 
@@ -464,7 +541,7 @@ Each phase has a threshold. Do not pass a gate on enthusiasm.
 | 4 | Accounts, durable history | Day-7 ≥ 25% |
 | 5 | Availability and regional deep links | Links working in top three markets |
 | 6 | One pick, the ticket, re-roll cap | Zero-shuffle acceptance ≥ 50% |
-| 7 | Household mode + one-time unlock | 3×/week returns ≥ 15% |
+| 7 | Ticket trial + Stripe + household mode | 3×/week returns ≥ 15% |
 | 8 | Ambient pre-picks | Prediction accuracy acceptable |
 
 Phases 1 to 3 need no accounts, no server, and no money. They are the highest-value work available and should be done before anything requiring infrastructure.
@@ -501,8 +578,10 @@ Settled, with reasons. Revisit only with new evidence.
 | Content type | TV only | Films break meal-fitting on every pick |
 | Data source | TVmaze | Free, no key, TV-first, CORS-enabled |
 | Mood count | Four | More thins each pool and adds taps |
-| Free tier limit | None | Free alternatives abundant; free tier is the growth engine |
-| Paid model | One-time, not subscription | Users already pay for four services |
+| Paid model | One-time $7, not subscription | Users already pay for several services |
+| Free tier limit | None, ever | Free substitutes abundant; bouncing users feeds competitors |
+| Paid trial | 3 tickets, offered after 5 picks over 3+ days | Personalisation can't be demonstrated with no history |
+| Payment rail | Stripe on web; web-first billing if native | 3% vs 15–30% store commission |
 | Paid escape hatch | None at launch | Can loosen later; can't tighten |
 | Chatbot | No | Inverts the thesis; competes with free assistants |
 | Voice | Yes | Correct input mode for busy hands |
@@ -512,11 +591,12 @@ Settled, with reasons. Revisit only with new evidence.
 
 ### Still open
 
-1. Price point: $5, $7 or $9
-2. Fifth mood, or does the attention toggle cover the gap
+1. Fifth mood, or does the attention toggle cover the gap
 3. Re-roll cap: two or three
 4. Whether to pursue this as a business at all — deliberately deferred until retention data exists
 
 ---
+
+*Version 1.1 — monetisation structure and payment rails revised.*
 
 *Written collaboratively, October 2026. Revise when evidence contradicts it, not when enthusiasm suggests it.*
