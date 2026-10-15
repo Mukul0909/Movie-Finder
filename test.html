@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1C2622">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="streaminghot">
+<meta name="description" content="Pick before it goes cold.">
+<title>streaminghot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400;1,9..144,500&family=Inter+Tight:wght@400;500&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+
+:root{
+  --ground:#1C2622;
+  --paper:#E8EBE4;
+  --accent:#D4B48C;
+  --accent-deep:#96754B;
+  --whisper-f:#A5B0A8;
+  --whisper-c:#7E8479;
+  --line-f:rgba(232,235,228,.10);
+  --line-c:rgba(28,38,34,.12);
+  --serif:'Fraunces',Georgia,serif;
+  --sans:'Inter Tight',system-ui,sans-serif;
+  --jost:'Jost',system-ui,sans-serif;
+}
+
+html,body{height:100%}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--ground);
+  color:var(--paper);
+  font-family:var(--sans);
+  font-size:15px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+}
+
+.app{
+  max-width:520px;
+  margin:0 auto;
+  height:100vh;
+  height:100dvh;
+  height:100svh;
+  position:relative;
+  background:var(--ground);
+  overflow:hidden;
+}
+@media (min-width:640px){
+  .app{box-shadow:0 0 80px rgba(0,0,0,.35)}
+}
+
+.screen{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  padding:calc(20px + env(safe-area-inset-top)) 26px calc(26px + env(safe-area-inset-bottom));
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .22s ease;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+.screen.active{opacity:1;pointer-events:auto}
+
+/* ── STRIP ── */
+.strip{
+  flex:0 0 auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-family:var(--jost);
+  font-size:11px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  font-weight:500;
+  color:var(--whisper-f);
+  min-height:32px;
+  gap:12px;
+}
+.brand{display:flex;align-items:center;gap:9px;min-width:0}
+.brand .mark{width:16px;height:16px;flex:0 0 auto;display:block}
+.brand .word{
+  font-family:var(--serif);
+  font-size:14px;
+  font-weight:400;
+  letter-spacing:-.01em;
+  color:var(--paper);
+  text-transform:none;
+  white-space:nowrap;
+}
+.strip .right{cursor:pointer;padding:6px 0 6px 12px;flex:0 0 auto}
+.strip .right:active{opacity:.6}
+
+.light-screen{background:var(--paper);color:var(--ground)}
+.light-screen .strip{color:var(--whisper-c)}
+.light-screen .brand .word{color:var(--ground)}
+
+/* ── TYPOGRAPHY ── */
+.kicker{
+  font-family:var(--jost);
+  font-size:11px;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:20px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-weight:600;
+}
+.kicker::after{content:"";flex:1;height:1px;background:var(--line-f)}
+
+.h{
+  font-family:var(--serif);
+  font-size:52px;
+  font-weight:300;
+  letter-spacing:-.038em;
+  line-height:.94;
+  color:var(--paper);
+}
+.h em{font-style:italic;color:var(--accent)}
+
+/* ── SPLASH ── */
+#s-splash{
+  align-items:center;
+  justify-content:center;
+  padding:32px;
+}
+#s-splash .lockup{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:36px;
+}
+#s-splash .mark{
+  width:200px;
+  height:auto;
+  max-width:58vw;
+  display:block;
+}
+#s-splash .word{
+  font-family:var(--serif);
+  font-size:32px;
+  font-weight:400;
+  letter-spacing:-.03em;
+  line-height:1;
+  color:var(--paper);
+}
+#s-splash .word em{font-style:italic;color:var(--accent)}
+#s-splash .tag{
+  position:absolute;
+  bottom:calc(36px + env(safe-area-inset-bottom));
+  left:0;right:0;
+  text-align:center;
+  font-family:var(--jost);
+  font-size:10px;
+  letter-spacing:.26em;
+  text-transform:uppercase;
+  color:var(--whisper-f);
+  font-weight:500;
+  opacity:.55;
+}
+
+/* ── MOOD ── */
+#s-mood .lede{
+  margin-top:auto;
+  padding:32px 0 28px;
+}
+#s-mood .menu{margin-bottom:auto}
+
+.menu-row{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:14px;
+  padding:18px 0;
+  border:0;
+  border-bottom:1px solid var(--line-f);
+  background:none;
+  cursor:pointer;
+  position:relative;
+  text-align:left;
+  width:100%;
+  font-family:inherit;
+  color:inherit;
+}
+.menu-row:first-child{border-top:1px solid var(--line-f)}
+.menu-row .name{
+  font-family:var(--serif);
+  font-size:30px;
+  font-weight:300;
+  letter-spacing:-.03em;
+  line-height:1;
+  color:var(--paper);
+  transition:color .25s;
+  min-width:0;
+  overflow-wrap:break-word;
+}
+.menu-row .sub{
+  font-family:var(--jost);
+  font-size:11px;
+  letter-spacing:.14em;
+  color:var(--whisper-f);
+  font-weight:500;
+  text-transform:uppercase;
+  transition:color .25s;
+  flex:0 0 auto;
+  text-align:right;
+}
+.menu-row.on .name{color:var(--accent);font-style:italic}
+.menu-row.on .sub{color:var(--accent)}
+.menu-row.on::before{
+  content:"";
+  position:absolute;
+  left:-14px;
+  top:50%;
+  width:4px;height:4px;
+  border-radius:50%;
+  background:var(--accent);
+  transform:translateY(-50%);
+}
+
+/* ── BUTTONS ── */
+.cta-dock{
+  flex:0 0 auto;
+  padding-top:20px;
+}
+.cta{
+  width:100%;
+  border:0;
+  padding:22px;
+  cursor:pointer;
+  background:var(--paper);
+  color:var(--ground);
+  font-family:var(--serif);
+  font-size:13px;
+  font-weight:500;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  transition:opacity .2s;
+  border-radius:0;
+}
+.cta:disabled{opacity:.3;cursor:not-allowed}
+.cta:not(:disabled):active{opacity:.85}
+.cta svg{flex:0 0 auto}
+.cta.ghost{
+  background:transparent;
+  color:var(--paper);
+  border:1px solid var(--line-f);
+}
+
+/* ── MEAL ── */
+.chosen{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:16px 0 24px;
+  font-family:var(--jost);
+  font-size:11px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  font-weight:500;
+  flex:0 0 auto;
+}
+.chosen .lbl{color:var(--whisper-f)}
+.chosen .val{color:var(--accent)}
+.chosen .dot{width:3px;height:3px;border-radius:50%;background:var(--whisper-f);flex:0 0 auto}
+
+.meal-head{flex:0 0 auto;margin-bottom:32px}
+.meal-head h2{
+  font-family:var(--serif);
+  font-size:38px;
+  font-weight:300;
+  letter-spacing:-.035em;
+  line-height:1;
+  color:var(--paper);
+}
+.meal-head h2 em{font-style:italic;color:var(--accent)}
+
+.scale{flex:0 0 auto;margin-bottom:32px}
+.scale .vals{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:4px;
+  margin-bottom:14px;
+}
+.scale .val{
+  font-family:var(--serif);
+  font-size:20px;
+  font-weight:300;
+  color:var(--whisper-f);
+  cursor:pointer;
+  letter-spacing:-.02em;
+  transition:all .25s;
+  padding:6px 2px;
+  background:none;
+  border:0;
+  min-width:0;
+}
+.scale .val.sel{
+  font-size:44px;
+  color:var(--accent);
+  font-style:italic;
+}
+.scale .bar{height:1px;background:var(--line-f);position:relative}
+.scale .bar span{
+  position:absolute;
+  height:1px;
+  background:var(--accent);
+  top:0;
+  transition:left .3s;
+  width:24%;
+}
+.scale .ends{
+  display:flex;
+  justify-content:space-between;
+  margin-top:12px;
+  font-family:var(--jost);
+  font-size:11px;
+  letter-spacing:.2em;
+  color:var(--whisper-f);
+  text-transform:uppercase;
+  font-weight:500;
+}
+.scale .readout{
+  margin-top:22px;
+  font-family:var(--jost);
+  font-size:11px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  text-align:center;
+  font-weight:500;
+  color:var(--paper);
+}
+.scale .readout b{color:var(--accent);font-weight:600}
+
+.block{flex:0 0 auto;margin-bottom:28px}
+.block .lbl{
+  font-family:var(--jost);
+  font-size:11px;
+  letter-spacing:.2em;
+  color:var(--whisper-f);
+  text-transform:uppercase;
+  margin-bottom:12px;
+  font-weight:600;
+}
+
+.eye-row{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:14px;
+  padding:14px 0;
+  border:0;
+  border-bottom:1px solid var(--line-f);
+  background:none;
+  cursor:pointer;
+  font-family:inherit;
+  color:inherit;
+  width:100%;
+  text-align:left;
+}
+.eye-row:first-of-type{border-top:1px solid var(--line-f)}
+.eye-row .nm{
+  font-family:var(--jost);
+  font-size:14px;
+  font-weight:500;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--paper);
+  transition:all .25s;
+  min-width:0;
+}
+.eye-row .sc{
+  font-family:var(--jost);
+  font-size:10px;
+  letter-spacing:.14em;
+  color:var(--whisper-f);
+  text-transform:uppercase;
+  transition:color .25s;
+  font-weight:500;
+  flex:0 0 auto;
+}
+.eye-row.on .nm{color:var(--accent)}
+.eye-row.on .sc{color:var(--accent);opacity:.75}
+
+.origins{display:flex;flex-wrap:wrap;gap:18px}
+.origins button{
+  background:none;
+  border:0;
+  padding:4px 0;
+  font-family:var(--jost);
+  font-size:12px;
+  letter-spacing:.16em;
+  color:var(--whisper-f);
+  text-transform:uppercase;
+  cursor:pointer;
+  border-bottom:1px solid transparent;
+  font-weight:500;
+}
+.origins button.on{
+  color:var(--accent);
+  border-bottom-color:var(--accent);
+}
+
+/* ── PICKS ── */
+#s-picks{padding-bottom:calc(26px + env(safe-area-inset-bottom))}
+.picks-head{flex:0 0 auto;padding:8px 0 24px}
+.picks-head .kicker{margin-bottom:12px}
+.picks-head h2{
+  font-family:var(--serif);
+  font-size:34px;
+  font-weight:300;
+  letter-spacing:-.035em;
+  line-height:1;
+  color:var(--paper);
+}
+.picks-head h2 em{font-style:italic;color:var(--accent)}
+
+.pick-list{flex:1 1 auto;min-height:0}
+
+.hero-pick{margin-bottom:20px;cursor:pointer}
+.hero-pick .photo{
+  height:160px;
+  background:linear-gradient(150deg,#2A3F31 0%,#1C2622 60%,#0F1613 100%);
+  position:relative;
+  overflow:hidden;
+  margin-bottom:14px;
+}
+.hero-pick .photo::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at 30% 40%,rgba(212,180,140,.28),transparent 60%);
+}
+.hero-pick .role{
+  font-family:var(--jost);
+  font-size:10px;
+  letter-spacing:.24em;
+  color:var(--accent);
+  text-transform:uppercase;
+  font-weight:600;
+  margin-bottom:8px;
+}
+.hero-pick h3{
+  font-family:var(--serif);
+  font-size:28px;
+  font-weight:300;
+  letter-spacing:-.028em;
+  line-height:1.02;
+  color:var(--paper);
+  margin-bottom:8px;
+}
+.hero-pick .meta{
+  font-family:var(--jost);
+  font-size:11px;
+  letter-spacing:.16em;
+  color:var(--whisper-f);
+  text-transform:uppercase;
+  margin-bottom:12px;
+  font-weight:500;
+}
+.hero-pick .why{
+  font-family:var(--serif);
+  font-size:16px;
+  font-style:italic;
+  font-weight:300;
+  color:rgba(232,235,228,.75);
+  line-height:1.45;
+}
+
+.alt-picks{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-bottom:20px;
+}
+.alt-pick{cursor:pointer}
+.alt-pick .photo{
+  height:96px;
+  background:linear-gradient(150deg,#2A3F31,#1C2622);
+  margin-bottom:10px;
+  position:relative;
+  overflow:hidden;
+}
+.alt-pick .photo.b{background:linear-gradient(150deg,#3A4438,#1F2823)}
+.alt-pick .photo::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at 70% 60%,rgba(212,180,140,.18),transparent 60%);
+}
+.alt-pick .role{
+  font-family:var(--jost);
+  font-size:9px;
+  letter-spacing:.22em;
+  color:var(--whisper-f);
+  text-transform:uppercase;
+  margin-bottom:6px;
+  font-weight:600;
+}
+.alt-pick h4{
+  font-family:var(--serif);
+  font-size:17px;
+  font-weight:300;
+  letter-spacing:-.02em;
+  line-height:1.15;
+  color:var(--paper);
+  margin-bottom:4px;
+  overflow-wrap:break-word;
+}
+.alt-pick .meta{
+  font-family:var(--jost);
+  font-size:10px;
+  letter-spacing:.14em;
+  color:var(--whisper-f);
+  text-transform:uppercase;
+  font-weight:500;
+}
+
+/* ── TICKET ── */
+.ticket-stage{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:12px 0;
+}
+.ticket{
+  background:var(--paper);
+  color:var(--ground);
+  padding:26px 22px 22px;
+  position:relative;
+}
+.ticket::before,
+.ticket::after{
+  content:"";
+  position:absolute;
+  left:0;right:0;
+  height:11px;
+  background-image:radial-gradient(circle at 11px 5.5px,var(--ground) 5.5px,transparent 6px);
+  background-size:22px 11px;
+  background-repeat:repeat-x;
+}
+.ticket::before{top:-1px}
+.ticket::after{bottom:-1px;transform:rotate(180deg)}
+
+.tk-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding-bottom:16px;
+  border-bottom:1px solid var(--line-c);
+  margin-bottom:20px;
+  gap:12px;
+}
+.tk-top .l,.tk-top .r{
+  font-family:var(--jost);
+  font-size:10px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  font-weight:600;
+}
+.tk-top .l{color:var(--ground)}
+.tk-top .r{color:var(--accent-deep);flex:0 0 auto}
+.tk-photo{
+  height:130px;
+  background:linear-gradient(150deg,#2A3F31,#0F1613);
+  margin-bottom:18px;
+  position:relative;
+  overflow:hidden;
+}
+.tk-photo::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at 30% 40%,var(--accent),transparent 55%);
+  opacity:.28;
+}
+.tk-title{
+  font-family:var(--serif);
+  font-size:32px;
+  font-weight:300;
+  letter-spacing:-.035em;
+  line-height:.98;
+  margin-bottom:9px;
+  overflow-wrap:break-word;
+}
+.tk-meta{
+  font-family:var(--jost);
+  font-size:11px;
+  letter-spacing:.16em;
+  color:var(--whisper-c);
+  text-transform:uppercase;
+  margin-bottom:20px;
+  font-weight:500;
+}
+.tk-rule{height:1px;background:var(--line-c);margin-bottom:18px}
+.tk-reason{
+  font-family:var(--serif);
+  font-size:17px;
+  font-style:italic;
+  font-weight:300;
+  line-height:1.5;
+  margin-bottom:22px;
+}
+.tk-reason::before{content:"\201C";color:var(--accent-deep)}
+.tk-reason::after{content:"\201D";color:var(--accent-deep)}
+.tk-cta{
+  width:100%;
+  background:var(--ground);
+  color:var(--paper);
+  border:0;
+  padding:18px;
+  font-family:var(--serif);
+  font-size:12px;
+  font-weight:500;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  cursor:pointer;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.tk-reroll{
+  text-align:center;
+  margin-top:20px;
+  font-family:var(--jost);
+  font-size:10px;
+  letter-spacing:.22em;
+  color:var(--whisper-f);
+  text-transform:uppercase;
+  font-weight:500;
+}
+.tk-reroll b{color:var(--accent);font-weight:600}
+
+/* ── RETURN ── */
+.return-body{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:0 8px;
+}
+.return-thumb{
+  width:90px;
+  height:124px;
+  background:linear-gradient(150deg,#2A3F31,#0F1613);
+  margin-bottom:32px;
+  position:relative;
+  overflow:hidden;
+}
+.return-thumb::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at 30% 40%,var(--accent),transparent 60%);
+  opacity:.3;
+}
+.return-kicker{
+  font-family:var(--jost);
+  font-size:11px;
+  letter-spacing:.22em;
+  color:var(--accent-deep);
+  text-transform:uppercase;
+  font-weight:600;
+  margin-bottom:16px;
+}
+.return-h{
+  font-family:var(--serif);
+  font-size:34px;
+  font-weight:300;
+  letter-spacing:-.038em;
+  line-height:1.02;
+  margin-bottom:14px;
+}
+.return-h em{font-style:italic;color:var(--accent-deep)}
+.return-p{
+  font-size:13px;
+  line-height:1.55;
+  color:var(--whisper-c);
+  max-width:250px;
+}
+.return-actions{
+  width:100%;
+  margin-top:36px;
+  display:flex;
+  flex-direction:column;
+}
+.return-actions .rbtn{
+  width:100%;
+  border:0;
+  padding:20px 0;
+  font-family:var(--serif);
+  font-size:12px;
+  font-weight:500;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  cursor:pointer;
+  border-bottom:1px solid var(--line-c);
+}
+.return-actions .yes{background:var(--ground);color:var(--paper)}
+.return-actions .no{background:transparent;color:var(--ground)}
+.return-skip{
+  margin-top:18px;
+  font-family:var(--jost);
+  font-size:10px;
+  letter-spacing:.22em;
+  color:var(--whisper-c);
+  text-transform:uppercase;
+  background:none;
+  border:0;
+  cursor:pointer;
+  font-weight:500;
+  padding:8px;
+}
+
+/* ── ASK ── */
+.ask-body{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:0 4px;
+}
+.ask-kicker{
+  font-family:var(--jost);
+  font-size:11px;
+  letter-spacing:.22em;
+  color:var(--accent);
+  text-transform:uppercase;
+  font-weight:600;
+  margin-bottom:24px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.ask-kicker::after{
+  content:"";
+  flex:1;
+  height:1px;
+  background:rgba(212,180,140,.28);
+}
+.ask-h{
+  font-family:var(--serif);
+  font-size:46px;
+  font-weight:300;
+  letter-spacing:-.04em;
+  line-height:.96;
+  margin-bottom:32px;
+}
+.ask-h em{font-style:italic;color:var(--accent)}
+.ask-list{list-style:none;margin-bottom:32px}
+.ask-list li{
+  display:flex;
+  gap:14px;
+  font-family:var(--serif);
+  font-size:16px;
+  font-weight:300;
+  line-height:1.45;
+  color:rgba(232,235,228,.82);
+  padding:12px 0;
+  border-bottom:1px solid var(--line-f);
+}
+.ask-list li:first-child{border-top:1px solid var(--line-f)}
+.ask-list li::before{
+  content:"\2014";
+  color:var(--accent);
+  flex:0 0 auto;
+  font-size:11px;
+  padding-top:4px;
+}
+.ask-price{
+  display:flex;
+  align-items:baseline;
+  gap:20px;
+  padding-bottom:24px;
+  border-bottom:1px solid var(--line-f);
+}
+.ask-price .num{
+  font-family:var(--serif);
+  font-size:64px;
+  font-weight:300;
+  letter-spacing:-.05em;
+  line-height:.85;
+  font-style:italic;
+}
+.ask-price .meta{
+  font-family:var(--jost);
+  font-size:10px;
+  letter-spacing:.2em;
+  color:var(--whisper-f);
+  text-transform:uppercase;
+  line-height:2;
+  font-weight:500;
+}
+.ask-price .meta b{color:var(--paper);font-weight:600}
+
+/* ── INSTALL PROMPT ── */
+.install-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+  z-index:100;
+}
+.install-overlay.show{display:flex}
+.install-sheet{
+  width:100%;
+  max-width:520px;
+  background:var(--paper);
+  color:var(--ground);
+  padding:30px 26px calc(24px + env(safe-area-inset-bottom));
+  animation:slideUp .35s cubic-bezier(.22,.61,.36,1);
+}
+@keyframes slideUp{
+  from{transform:translateY(100%)}
+  to{transform:translateY(0)}
+}
+.install-sheet .mini{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:22px;
+}
+.install-sheet .mini svg{width:22px;height:22px}
+.install-sheet .mini .word{
+  font-family:var(--serif);
+  font-size:17px;
+  font-weight:400;
+  letter-spacing:-.02em;
+}
+.install-sheet .mini .word em{font-style:italic;color:var(--accent-deep)}
+.install-sheet h3{
+  font-family:var(--serif);
+  font-size:26px;
+  font-weight:300;
+  letter-spacing:-.035em;
+  line-height:1.08;
+  margin-bottom:10px;
+}
+.install-sheet h3 em{font-style:italic;color:var(--accent-deep)}
+.install-sheet p{
+  font-size:13.5px;
+  line-height:1.55;
+  color:var(--whisper-c);
+  margin-bottom:24px;
+}
+.install-sheet p b{color:var(--ground);font-weight:500}
+.install-actions{display:flex;flex-direction:column}
+.install-actions button{
+  width:100%;
+  border:0;
+  border-radius:0;
+  padding:18px 0;
+  font-family:var(--serif);
+  font-size:12px;
+  font-weight:500;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  cursor:pointer;
+}
+.install-actions .install{
+  background:var(--ground);
+  color:var(--paper);
+}
+.install-actions .later{
+  background:transparent;
+  color:var(--ground);
+  padding-top:14px;
+  font-family:var(--jost);
+  font-size:10px;
+  letter-spacing:.22em;
+  font-weight:500;
+}
+
+@media (max-width:359px){
+  .h{font-size:44px}
+  .menu-row .name{font-size:26px}
+  .menu-row .sub{font-size:10px}
+  .meal-head h2{font-size:32px}
+  .scale .val.sel{font-size:38px}
+  .picks-head h2{font-size:28px}
+  .hero-pick h3{font-size:26px}
+  .tk-title{font-size:28px}
+  .ask-h{font-size:38px}
+  .ask-price .num{font-size:54px}
+  .return-h{font-size:28px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:0.01ms !important;
+    transition-duration:0.01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ MARK DEFINITION ═══ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="fg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fff0c9"/>
+      <stop offset=".34" stop-color="#d7b17b"/>
+      <stop offset=".62" stop-color="#fff0d0"/>
+      <stop offset="1" stop-color="#b98950"/>
+    </linearGradient>
+    <linearGradient id="sg" x1="0" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#fff4d9"/>
+      <stop offset=".55" stop-color="#e7d0a8"/>
+      <stop offset="1" stop-color="#c7a06d"/>
+    </linearGradient>
+    <linearGradient id="eg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#a87842"/>
+      <stop offset=".5" stop-color="#f8e4bd"/>
+      <stop offset="1" stop-color="#b98c54"/>
+    </linearGradient>
+    <symbol id="mark" viewBox="180 130 720 720">
+      <path d="M235 735 C350 796 651 800 783 731" fill="none" stroke="#000" stroke-width="13" opacity=".18"/>
+      <path d="M245 710 C360 757 545 739 702 695 C774 675 817 685 795 714 C761 759 588 790 416 775 C336 768 277 746 245 710 Z" fill="url(#sg)"/>
+      <path d="M244 710 C355 747 546 720 699 680 C762 664 801 675 795 695 C785 724 700 744 615 752" fill="none" stroke="#fff1d0" stroke-width="5" stroke-linecap="round"/>
+      <path d="M267 729 C391 780 618 769 758 717" fill="none" stroke="#b78b55" stroke-width="2.5" opacity=".65"/>
+      <path d="M523 704 C496 673 485 642 495 608 C508 566 553 546 591 512 C633 475 652 430 634 390 C618 354 581 330 560 296 C538 261 541 220 574 180 C547 216 552 250 577 280 C605 313 651 335 667 377 C690 435 660 488 618 526 C579 561 535 579 525 617 C517 649 535 678 556 694 Z" fill="url(#fg)" stroke="url(#eg)" stroke-width="3"/>
+      <path d="M523 704 C496 673 485 642 495 608 C508 566 553 546 591 512 C633 475 652 430 634 390 C618 354 581 330 560 296 C538 261 541 220 574 180" fill="none" stroke="#17211c" stroke-width="13" stroke-linejoin="round"/>
+      <path d="M556 694 C535 678 517 649 525 617 C535 579 579 561 618 526 C660 488 690 435 667 377 C651 335 605 313 577 280 C552 250 547 216 574 180" fill="none" stroke="#17211c" stroke-width="13" stroke-linejoin="round"/>
+      <g fill="#f7e6c4" stroke="#b88c54" stroke-width="1">
+        <rect x="515" y="657" width="9" height="15" rx="1" transform="rotate(-25 519 664)"/>
+        <rect x="505" y="627" width="9" height="15" rx="1" transform="rotate(8 509 634)"/>
+        <rect x="516" y="594" width="9" height="15" rx="1" transform="rotate(30 520 601)"/>
+        <rect x="539" y="565" width="9" height="15" rx="1" transform="rotate(45 543 572)"/>
+        <rect x="568" y="542" width="9" height="15" rx="1" transform="rotate(48 572 549)"/>
+        <rect x="597" y="516" width="9" height="15" rx="1" transform="rotate(48 601 523)"/>
+        <rect x="622" y="485" width="9" height="15" rx="1" transform="rotate(34 626 492)"/>
+        <rect x="640" y="451" width="9" height="15" rx="1" transform="rotate(15 644 458)"/>
+        <rect x="642" y="416" width="9" height="15" rx="1" transform="rotate(-9 646 423)"/>
+        <rect x="628" y="381" width="9" height="15" rx="1" transform="rotate(-28 632 388)"/>
+        <rect x="605" y="350" width="9" height="15" rx="1" transform="rotate(-40 609 357)"/>
+        <rect x="578" y="321" width="9" height="15" rx="1" transform="rotate(-42 582 328)"/>
+        <rect x="557" y="286" width="9" height="15" rx="1" transform="rotate(-22 561 293)"/>
+        <rect x="554" y="250" width="9" height="15" rx="1" transform="rotate(8 558 257)"/>
+        <rect x="566" y="216" width="9" height="15" rx="1" transform="rotate(28 570 223)"/>
+        <rect x="587" y="198" width="9" height="15" rx="1" transform="rotate(42 591 205)"/>
+      </g>
+      <path d="M574 180 C547 216 552 250 577 280 C605 313 651 335 667 377" fill="none" stroke="#fff0cf" stroke-width="3" stroke-linecap="round" opacity=".8"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ═══ APP ═══ -->
+<main class="app" id="app">
+
+  <!-- SPLASH -->
+  <section class="screen active" id="s-splash">
+    <div class="lockup">
+      <svg class="mark" viewBox="180 130 720 720"><use href="#mark"/></svg>
+      <div class="word">streaming<em>hot</em></div>
+    </div>
+    <div class="tag">Pick before it goes cold</div>
+  </section>
+
+  <!-- MOOD -->
+  <section class="screen" id="s-mood">
+    <div class="strip">
+      <div class="brand">
+        <svg class="mark" viewBox="180 130 720 720"><use href="#mark"/></svg>
+        <span class="word">streaminghot</span>
+      </div>
+      <span class="right" data-to="meal">Adjust</span>
+    </div>
+    <div class="lede">
+      <div class="kicker" id="time-kicker">Tonight</div>
+      <h1 class="h">What are you<br>eating <em>to?</em></h1>
+    </div>
+    <div class="menu" id="mood-list">
+      <button class="menu-row" data-mood="cozy"><span class="name">Cozy</span><span class="sub">warm &amp; slow</span></button>
+      <button class="menu-row" data-mood="tense"><span class="name">Tense</span><span class="sub">on edge</span></button>
+      <button class="menu-row" data-mood="light"><span class="name">Light</span><span class="sub">easy laughs</span></button>
+      <button class="menu-row" data-mood="curious"><span class="name">Curious</span><span class="sub">learn a bit</span></button>
+    </div>
+    <div class="cta-dock">
+      <button class="cta" id="go" disabled>
+        <span>Serve me something</span>
+        <svg width="16" height="16" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- MEAL -->
+  <section class="screen" id="s-meal">
+    <div class="strip">
+      <div class="brand">
+        <svg class="mark" viewBox="180 130 720 720"><use href="#mark"/></svg>
+        <span class="word">streaminghot</span>
+      </div>
+      <span class="right" data-to="mood">Back</span>
+    </div>
+    <div class="chosen">
+      <span class="lbl">Mood</span>
+      <span class="dot"></span>
+      <span class="val" id="chosen-mood">Cozy</span>
+    </div>
+    <div class="meal-head">
+      <h2>How long's<br>the <em>meal?</em></h2>
+    </div>
+    <div class="scale">
+      <div class="vals" id="scale-vals"></div>
+      <div class="bar"><span id="scale-bar"></span></div>
+      <div class="ends"><span>Snack</span><span>Feast</span></div>
+      <div class="readout" id="scale-readout"></div>
+    </div>
+    <div class="block">
+      <div class="lbl">Your eyes</div>
+      <button class="eye-row" data-eyes="half">
+        <span class="nm">I'll be looking down</span>
+        <span class="sc">no subtitles</span>
+      </button>
+      <button class="eye-row" data-eyes="full">
+        <span class="nm">I can watch properly</span>
+        <span class="sc">subtitles fine</span>
+      </button>
+    </div>
+    <div class="block">
+      <div class="lbl">Made in</div>
+      <div class="origins" id="origins">
+        <button data-o="any" class="on">Anywhere</button>
+        <button data-o="GB">UK</button>
+        <button data-o="US">US</button>
+        <button data-o="CA">Canada</button>
+        <button data-o="AU">Australia</button>
+        <button data-o="JP">Japan</button>
+      </div>
+    </div>
+    <div class="cta-dock">
+      <button class="cta" id="meal-go">
+        <span>Serve me something</span>
+        <svg width="16" height="16" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- PICKS -->
+  <section class="screen" id="s-picks">
+    <div class="strip">
+      <div class="brand">
+        <svg class="mark" viewBox="180 130 720 720"><use href="#mark"/></svg>
+        <span class="word">streaminghot</span>
+      </div>
+      <span class="right" data-to="mood">Back</span>
+    </div>
+    <div class="picks-head">
+      <div class="kicker" id="picks-kicker">Cozy · under 22 minutes</div>
+      <h2>Three ways<br>to <em>go.</em></h2>
+    </div>
+    <div class="pick-list" id="pick-list"></div>
+    <div class="cta-dock">
+      <button class="cta ghost" id="shuffle">
+        <span>Show me three others</span>
+        <span id="shuffle-count" style="font-family:var(--jost);font-size:10px;letter-spacing:.16em;opacity:.55;text-transform:uppercase;font-weight:500">1 of 2</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- TICKET -->
+  <section class="screen" id="s-ticket">
+    <div class="strip">
+      <div class="brand">
+        <svg class="mark" viewBox="180 130 720 720"><use href="#mark"/></svg>
+        <span class="word">streaminghot</span>
+      </div>
+      <span class="right" data-to="picks">Back</span>
+    </div>
+    <div class="ticket-stage">
+      <div class="ticket">
+        <div class="tk-top">
+          <span class="l">Streaminghot</span>
+          <span class="r" id="serial">No. 001</span>
+        </div>
+        <div class="tk-photo"></div>
+        <div class="tk-title" id="tk-title">The Bear</div>
+        <div class="tk-meta" id="tk-meta">22 min · FX</div>
+        <div class="tk-rule"></div>
+        <div class="tk-reason" id="tk-reason">You keep coming back to kitchens. Same heat, less shouting.</div>
+        <div class="tk-cta">
+          <span>Open in hulu</span>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="tk-reroll">not it? <b>re-roll</b> · one left</div>
+    </div>
+  </section>
+
+  <!-- RETURN -->
+  <section class="screen light-screen" id="s-return">
+    <div class="strip">
+      <div class="brand">
+        <svg class="mark" viewBox="180 130 720 720"><use href="#mark"/></svg>
+        <span class="word">streaminghot</span>
+      </div>
+      <span class="right" data-to="mood">Skip</span>
+    </div>
+    <div class="return-body">
+      <div class="return-thumb"></div>
+      <div class="return-kicker">Welcome back</div>
+      <div class="return-h">Did you watch<br><em id="return-title">The Bear?</em></div>
+      <div class="return-p">One tap tells me whether the pick was right. It's the only way I get better.</div>
+      <div class="return-actions">
+        <button class="rbtn yes" data-to="mood">Yes, watching now</button>
+        <button class="rbtn no" data-to="mood">No, still looking</button>
+      </div>
+      <button class="return-skip" data-to="mood">skip for now</button>
+    </div>
+  </section>
+
+  <!-- ASK -->
+  <section class="screen" id="s-ask">
+    <div class="strip">
+      <div class="brand">
+        <svg class="mark" viewBox="180 130 720 720"><use href="#mark"/></svg>
+        <span class="word">streaminghot</span>
+      </div>
+      <span class="right" data-to="picks">Not now</span>
+    </div>
+    <div class="ask-body">
+      <div class="ask-kicker">three tickets in</div>
+      <h1 class="ask-h">That's three<br>nights <em>sorted.</em></h1>
+      <ul class="ask-list">
+        <li>Never offer something you've already seen</li>
+        <li>Only pick from services you pay for</li>
+        <li>Remember where you left off, everywhere</li>
+        <li>Decide for two of you, when you want that</li>
+      </ul>
+      <div class="ask-price">
+        <div class="num">$7</div>
+        <div class="meta"><b>One payment.</b><br>No subscription.<br>Yours, keep it.</div>
+      </div>
+    </div>
+    <div class="cta-dock">
+      <button class="cta" id="keep">
+        <span>Keep the ticket</span>
+        <svg width="16" height="16" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══ INSTALL PROMPT ═══ -->
+<div class="install-overlay" id="install-overlay">
+  <div class="install-sheet" id="install-sheet">
+    <div class="mini">
+      <svg viewBox="180 130 720 720"><use href="#mark"/></svg>
+      <span class="word">streaming<em>hot</em></span>
+    </div>
+    <h3>Keep it on<br>your <em>home screen?</em></h3>
+    <p>Opens straight to the question. No browser bar. No app store. Works offline.</p>
+    <div class="install-actions">
+      <button class="install" id="install-yes">Add to home screen</button>
+      <button class="later" id="install-no">not now</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════════
+   STATE
+   ═══════════════════════════════════════════ */
+const S = {
+  mood: null,
+  mins: 22,
+  eyes: 'half',
+  origin: 'any',
+  shuffles: 0,
+  seen: new Set(),
+  history: [],
+  installDismissed: false,
+  deferredInstall: null
+};
+
+const BANDS = [10, 16, 22, 28, 36, 45, 58, 75];
+const MIN_WORDS = ['ten','sixteen','twenty-two','twenty-eight','thirty-six','forty-five','fifty-eight','seventy-five'];
+const MOODS = {
+  cozy:    { label: 'Cozy' },
+  tense:   { label: 'Tense' },
+  light:   { label: 'Light' },
+  curious: { label: 'Curious' }
+};
+
+const POOL = [
+  { id:1,  title:"Detectorists",                genres:["Comedy","Drama"],                    minutes:30, rating:8.5, country:"GB", network:"BBC Four",   mood:'cozy' },
+  { id:2,  title:"Somebody Feed Phil",          genres:["Food","Travel"],                     minutes:50, rating:8.0, country:"US", network:"Netflix",    mood:'cozy' },
+  { id:3,  title:"Chef's Table",                genres:["Food"],                              minutes:50, rating:8.5, country:"US", network:"Netflix",    mood:'cozy' },
+  { id:4,  title:"Great British Bake Off",      genres:["Food","Family"],                     minutes:58, rating:7.9, country:"GB", network:"Channel 4",  mood:'cozy' },
+  { id:5,  title:"Our Planet",                  genres:["Nature"],                            minutes:50, rating:8.8, country:"GB", network:"Netflix",    mood:'cozy' },
+  { id:6,  title:"The Last Dance",              genres:["Sports","History"],                  minutes:50, rating:8.9, country:"US", network:"ESPN",       mood:'cozy' },
+  { id:7,  title:"Schitt's Creek",              genres:["Comedy"],                            minutes:22, rating:8.5, country:"CA", network:"CBC",        mood:'light' },
+  { id:8,  title:"Brooklyn Nine-Nine",          genres:["Comedy"],                            minutes:22, rating:8.4, country:"US", network:"NBC",        mood:'light' },
+  { id:9,  title:"Taskmaster",                  genres:["Comedy"],                            minutes:45, rating:8.4, country:"GB", network:"Channel 4",  mood:'light' },
+  { id:10, title:"Cunk on Earth",               genres:["Comedy","History"],                  minutes:28, rating:8.1, country:"GB", network:"BBC Two",    mood:'light' },
+  { id:11, title:"What We Do in the Shadows",   genres:["Comedy","Horror"],                   minutes:24, rating:8.6, country:"US", network:"FX",         mood:'light' },
+  { id:12, title:"Severance",                   genres:["Drama","Thriller","Science-Fiction"],minutes:50, rating:8.7, country:"US", network:"Apple TV+",  mood:'tense' },
+  { id:13, title:"Slow Horses",                 genres:["Drama","Espionage","Thriller"],      minutes:48, rating:8.3, country:"GB", network:"Apple TV+",  mood:'tense' },
+  { id:14, title:"Dark",                        genres:["Drama","Mystery","Science-Fiction"], minutes:55, rating:8.7, country:"DE", network:"Netflix",    mood:'tense' },
+  { id:15, title:"Bodyguard",                   genres:["Crime","Drama","Thriller"],          minutes:58, rating:8.1, country:"GB", network:"BBC One",    mood:'tense' },
+  { id:16, title:"How To with John Wilson",     genres:["Comedy","Travel"],                   minutes:25, rating:8.2, country:"US", network:"Max",        mood:'curious' },
+  { id:17, title:"Planet Earth III",            genres:["Nature"],                            minutes:58, rating:9.0, country:"GB", network:"BBC One",    mood:'curious' },
+  { id:18, title:"Street Food: Asia",           genres:["Food","Travel"],                     minutes:30, rating:8.0, country:"US", network:"Netflix",    mood:'curious' },
+  { id:19, title:"Abstract: The Art of Design", genres:["Music","History"],                   minutes:45, rating:8.2, country:"US", network:"Netflix",    mood:'curious' },
+  { id:20, title:"The Bear",                    genres:["Comedy","Drama","Food"],             minutes:22, rating:8.6, country:"US", network:"FX",         mood:'cozy' },
+  { id:21, title:"Ghosts",                      genres:["Comedy","Supernatural"],             minutes:28, rating:8.2, country:"GB", network:"BBC One",    mood:'light' },
+  { id:22, title:"Inside No. 9",                genres:["Comedy","Drama","Mystery"],          minutes:29, rating:8.6, country:"GB", network:"BBC Two",    mood:'light' },
+  { id:23, title:"Black Mirror",                genres:["Drama","Science-Fiction","Thriller"],minutes:60, rating:8.7, country:"GB", network:"Netflix",    mood:'tense' },
+  { id:24, title:"Blue Planet II",              genres:["Nature"],                            minutes:58, rating:9.2, country:"GB", network:"BBC One",    mood:'curious' }
+];
+
+const REASONS = {
+  safe:  ["The one that just works for this.", "Reliable, and it earns it.", "If you only pick one, this."],
+  quick: ["Short enough to finish with the plate.", "In and out before the food cools.", "Done by the time you are."],
+  wild:  ["Not the obvious call. Worth it.", "Sideways from the rest. Try it.", "The one you wouldn't have found."]
+};
+
+const REASON_QUOTES = [
+  "You keep coming back to kitchens. Same heat, less shouting.",
+  "The kind of thing you'd have found on your own — eventually.",
+  "Short, warm, and it ends before your plate does.",
+  "You've been circling this one for weeks. Now's the time."
+];
+
+/* ═══════════════════════════════════════════
+   DOM HELPERS
+   ═══════════════════════════════════════════ */
+function $(sel){ return document.querySelector(sel); }
+function $$(sel){ return Array.prototype.slice.call(document.querySelectorAll(sel)); }
+
+/* ═══════════════════════════════════════════
+   NAVIGATION
+   ═══════════════════════════════════════════ */
+let currentScreen = 'splash';
+
+function show(id){
+  if (id === currentScreen) return;
+  const prev = document.getElementById('s-' + currentScreen);
+  const next = document.getElementById('s-' + id);
+  if (!next) return;
+
+  if (prev) prev.classList.remove('active');
+  next.classList.add('active');
+  currentScreen = id;
+
+  try { history.pushState({ screen: id }, '', '#' + id); } catch(e){}
+
+  if (id === 'picks') renderPicks();
+  if (id === 'return') {
+    const last = S.history[S.history.length - 1];
+    if (last) $('#return-title').textContent = last.title + '?';
+  }
+
+  next.scrollTop = 0;
+}
+
+document.addEventListener('click', function(e){
+  const t = e.target.closest('[data-to]');
+  if (!t) return;
+  e.preventDefault();
+  show(t.dataset.to);
+});
+
+window.addEventListener('popstate', function(e){
+  if (e.state && e.state.screen) show(e.state.screen);
+  else show('mood');
+});
+
+/* ═══════════════════════════════════════════
+   MOOD
+   ═══════════════════════════════════════════ */
+$('#mood-list').addEventListener('click', function(e){
+  const row = e.target.closest('.menu-row');
+  if (!row) return;
+  S.mood = row.dataset.mood;
+  $$('#mood-list .menu-row').forEach(function(r){
+    r.classList.toggle('on', r === row);
+  });
+  $('#go').disabled = false;
+  $('#chosen-mood').textContent = MOODS[S.mood].label;
+});
+
+$('#go').addEventListener('click', function(){
+  if (S.mood) show('picks');
+});
+
+/* ═══════════════════════════════════════════
+   MEAL
+   ═══════════════════════════════════════════ */
+function paintScale(){
+  $('#scale-vals').innerHTML = BANDS.map(function(v, i){
+    return '<button class="val' + (v === S.mins ? ' sel' : '') + '" data-i="' + i + '">' + v + '</button>';
+  }).join('');
+
+  const idx = BANDS.indexOf(S.mins);
+  const safeIdx = idx < 0 ? 2 : idx;
+  const pct = safeIdx / (BANDS.length - 1) * 100;
+  const bar = $('#scale-bar');
+  bar.style.left = 'calc(' + pct + '% - ' + (pct * 0.24) + 'px)';
+
+  const word = MIN_WORDS[safeIdx] || 'twenty-two';
+  $('#scale-readout').innerHTML = word + ' minutes · <b>from the device clock</b>';
+}
+
+$('#scale-vals').addEventListener('click', function(e){
+  const b = e.target.closest('.val');
+  if (!b) return;
+  S.mins = BANDS[+b.dataset.i];
+  paintScale();
+});
+
+$('#s-meal').addEventListener('click', function(e){
+  const eye = e.target.closest('.eye-row');
+  if (eye){
+    S.eyes = eye.dataset.eyes;
+    $$('#s-meal .eye-row').forEach(function(r){
+      r.classList.toggle('on', r === eye);
+    });
+    return;
+  }
+  const o = e.target.closest('#origins button');
+  if (o){
+    S.origin = o.dataset.o;
+    $$('#origins button').forEach(function(b){
+      b.classList.toggle('on', b === o);
+    });
+  }
+});
+
+$('#meal-go').addEventListener('click', function(){
+  if (!S.mood){
+    show('mood');
+    return;
+  }
+  show('picks');
+});
+
+/* ═══════════════════════════════════════════
+   PICKS
+   ═══════════════════════════════════════════ */
+function candidates(){
+  return POOL.filter(function(s){
+    if (s.mood !== S.mood) return false;
+    if (S.origin !== 'any' && s.country !== S.origin) return false;
+    if (s.minutes > S.mins + 15) return false;
+    return true;
+  }).sort(function(a, b){ return b.rating - a.rating; });
+}
+
+function pickThree(pool){
+  let avail = pool.filter(function(x){ return !S.seen.has(x.id); });
+  if (avail.length < 3){ S.seen.clear(); avail = pool; }
+  if (!avail.length) return [];
+
+  const safe = avail[0];
+  const rest = avail.slice(1);
+  const quick = rest.slice().sort(function(a, b){ return a.minutes - b.minutes; })[0];
+  const left = rest.filter(function(x){ return x !== quick; });
+  const sameG = new Set(safe.genres);
+  const off = left.filter(function(x){
+    return !x.genres.some(function(g){ return sameG.has(g); });
+  });
+  const bag = (off.length ? off : left).slice(0, 8);
+  const wild = bag[Math.floor(Math.random() * bag.length)];
+
+  const picks = [
+    { slot:'safe',  tag:'The safe one',  item: safe },
+    { slot:'quick', tag:'The quick one', item: quick },
+    { slot:'wild',  tag:'The wildcard',  item: wild }
+  ].filter(function(p){ return p.item; });
+
+  picks.forEach(function(p){ S.seen.add(p.item.id); });
+  return picks;
+}
+
+function renderPicks(){
+  if (!S.mood){
+    show('mood');
+    return;
+  }
+
+  const pool = candidates();
+  const picks = pickThree(pool);
+  const list = $('#pick-list');
+
+  if (!picks.length){
+    list.innerHTML =
+      '<div style="padding:36px 0;text-align:center;font-family:var(--jost);font-size:11px;' +
+      'letter-spacing:.18em;text-transform:uppercase;color:var(--whisper-f);font-weight:500;line-height:2">' +
+      'Nothing clears the bar.<br>Try a longer meal or wider origin.</div>';
+    return;
+  }
+
+  const safe = picks[0];
+  const quick = picks[1];
+  const wild = picks[2];
+  const moodLabel = MOODS[S.mood].label;
+  $('#picks-kicker').textContent = moodLabel + ' · under ' + S.mins + ' minutes';
+
+  let html = '';
+
+  if (safe){
+    html +=
+      '<div class="hero-pick" data-pick="' + safe.item.id + '">' +
+        '<div class="photo"></div>' +
+        '<div class="role">' + safe.tag + '</div>' +
+        '<h3>' + safe.item.title + '</h3>' +
+        '<div class="meta">' + safe.item.minutes + ' min · ' +
+          safe.item.genres.slice(0,2).join(' / ').toLowerCase() + ' · ' + safe.item.network + '</div>' +
+        '<div class="why">"' + REASONS.safe[Math.floor(Math.random()*3)] + '"</div>' +
+      '</div>';
+  }
+
+  const alts = [quick, wild].filter(Boolean);
+  if (alts.length){
+    html += '<div class="alt-picks">';
+    alts.forEach(function(p){
+      html +=
+        '<div class="alt-pick" data-pick="' + p.item.id + '">' +
+          '<div class="photo' + (p.slot === 'wild' ? ' b' : '') + '"></div>' +
+          '<div class="role">' + p.tag + '</div>' +
+          '<h4>' + p.item.title + '</h4>' +
+          '<div class="meta">' + p.item.minutes + ' min · ' + p.item.genres[0].toLowerCase() + '</div>' +
+        '</div>';
+    });
+    html += '</div>';
+  }
+
+  list.innerHTML = html;
+
+  list.querySelectorAll('[data-pick]').forEach(function(el){
+    el.addEventListener('click', function(){
+      const id = +el.dataset.pick;
+      const item = POOL.find(function(x){ return x.id === id; });
+      if (!item) return;
+      S.history.push({ title: item.title, at: Date.now(), mood: S.mood, mins: S.mins });
+      saveHistory();
+      openTicket(item);
+    });
+  });
+
+  $('#shuffle').disabled = false;
+  $('#shuffle-count').textContent = (S.shuffles + 1) + ' of 2';
+}
+
+$('#shuffle').addEventListener('click', function(){
+  if (S.shuffles >= 2) return;
+  S.shuffles++;
+  renderPicks();
+  if (S.shuffles >= 2){
+    $('#shuffle').disabled = true;
+    $('#shuffle-count').textContent = 'no more';
+    setTimeout(function(){ show('ask'); }, 1200);
+  }
+});
+
+/* ═══════════════════════════════════════════
+   TICKET
+   ═══════════════════════════════════════════ */
+let ticketSerial = 0;
+
+function openTicket(item){
+  ticketSerial++;
+  $('#serial').textContent = 'No. ' + String(ticketSerial).padStart(3, '0');
+  $('#tk-title').textContent = item.title;
+  $('#tk-meta').textContent = item.minutes + ' min · ' + item.network + ' · ' +
+    item.genres.slice(0,2).join(' / ').toLowerCase();
+  $('#tk-reason').textContent = REASON_QUOTES[Math.floor(Math.random() * REASON_QUOTES.length)];
+  show('ticket');
+}
+
+$('#keep').addEventListener('click', function(){
+  this.textContent = 'Coming to the signed-in build';
+  this.disabled = true;
+});
+
+/* ═══════════════════════════════════════════
+   HISTORY
+   ═══════════════════════════════════════════ */
+function saveHistory(){
+  try { localStorage.setItem('sh_history', JSON.stringify(S.history.slice(-50))); } catch(e){}
+}
+
+function loadHistory(){
+  try {
+    const h = localStorage.getItem('sh_history');
+    if (h) S.history = JSON.parse(h);
+  } catch(e){}
+}
+
+/* ═══════════════════════════════════════════
+   TIME OF DAY
+   ═══════════════════════════════════════════ */
+function setTimeContext(){
+  const h = new Date().getHours();
+  let k = 'Tonight', mins = 28;
+  if (h < 6){ k = 'Still up'; mins = 22; }
+  else if (h < 11){ k = 'This morning'; mins = 16; }
+  else if (h < 15){ k = 'Lunchtime'; mins = 22; }
+  else if (h < 18){ k = 'This afternoon'; mins = 22; }
+  else if (h >= 22){ k = 'A late one'; mins = 22; }
+  $('#time-kicker').textContent = k;
+  S.mins = mins;
+}
+
+/* ═══════════════════════════════════════════
+   INSTALL PROMPT
+   ═══════════════════════════════════════════ */
+function isStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches ||
+         window.navigator.standalone === true;
+}
+
+function isIOS(){
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
+function canShowInstall(){
+  if (isStandalone()) return false;
+  if (S.installDismissed) return false;
+  try {
+    if (localStorage.getItem('sh_install_dismissed') === '1') return false;
+  } catch(e){}
+  return S.deferredInstall || isIOS();
+}
+
+function showInstall(){
+  if (!canShowInstall()) return;
+  $('#install-overlay').classList.add('show');
+}
+
+function dismissInstall(){
+  S.installDismissed = true;
+  try { localStorage.setItem('sh_install_dismissed', '1'); } catch(e){}
+  $('#install-overlay').classList.remove('show');
+}
+
+window.addEventListener('beforeinstallprompt', function(e){
+  e.preventDefault();
+  S.deferredInstall = e;
+  setTimeout(showInstall, 15000);
+});
+
+$('#install-yes').addEventListener('click', async function(){
+  if (S.deferredInstall){
+    S.deferredInstall.prompt();
+    try {
+      await S.deferredInstall.userChoice;
+    } catch(e){}
+    S.deferredInstall = null;
+    dismissInstall();
+    return;
+  }
+  if (isIOS()){
+    $('#install-sheet').innerHTML =
+      '<div class="mini">' +
+        '<svg viewBox="180 130 720 720"><use href="#mark"/></svg>' +
+        '<span class="word">streaming<em>hot</em></span>' +
+      '</div>' +
+      '<h3>Two taps<br>to <em>keep it.</em></h3>' +
+      '<p>Tap the <b>Share</b> button at the bottom of Safari, then <b>Add to Home Screen</b>. It opens like a real app.</p>' +
+      '<div class="install-actions">' +
+        '<button class="install" id="install-close">Got it</button>' +
+      '</div>';
+    $('#install-close').addEventListener('click', dismissInstall);
+    return;
+  }
+  dismissInstall();
+});
+
+$('#install-no').addEventListener('click', dismissInstall);
+
+/* ═══════════════════════════════════════════
+   SERVICE WORKER (optional — silently fails if missing)
+   ═══════════════════════════════════════════ */
+if ('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    try {
+      navigator.serviceWorker.register('sw.js').catch(function(){});
+    } catch(e){}
+  });
+}
+
+/* ═══════════════════════════════════════════
+   BOOT
+   ═══════════════════════════════════════════ */
+function boot(){
+  loadHistory();
+  setTimeContext();
+  paintScale();
+
+  $$('#s-meal .eye-row').forEach(function(r){
+    r.classList.toggle('on', r.dataset.eyes === S.eyes);
+  });
+  $$('#origins button').forEach(function(b){
+    b.classList.toggle('on', b.dataset.o === S.origin);
+  });
+
+  // track visits for install prompt timing
+  try {
+    const v = parseInt(localStorage.getItem('sh_visits') || '0', 10);
+    const newV = v + 1;
+    localStorage.setItem('sh_visits', String(newV));
+    if (newV >= 2 && !isStandalone()) setTimeout(showInstall, 25000);
+  } catch(e){}
+
+  // iOS: show prompt after a while on first visit
+  if (isIOS() && !isStandalone()){
+    setTimeout(function(){
+      if (!S.installDismissed){
+        try {
+          if (localStorage.getItem('sh_install_dismissed') !== '1') showInstall();
+        } catch(e){}
+      }
+    }, 25000);
+  }
+
+  setTimeout(function(){
+    const recent = S.history[S.history.length - 1];
+    const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+    if (recent && recent.at > oneDayAgo){
+      show('return');
+    } else {
+      show('mood');
+    }
+  }, 1400);
+}
+
+boot();
+</script>
+</body>
+</html>
